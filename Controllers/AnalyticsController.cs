@@ -30,7 +30,7 @@ public class AnalyticsController : ControllerBase
     [HttpGet("revenue/summary")]
     public async Task<IActionResult> GetRevenueSummary([FromQuery] int year = 0)
     {
-        year = year == 0 ? DateTime.UtcNow.Year : year;
+        year = year == 0 ? 2025 : year;
         var data = await _analytics.GetRevenueSummaryAsync(year);
         return Ok(new ApiResponse<RevenueSummary> { Data = data });
     }
@@ -39,7 +39,7 @@ public class AnalyticsController : ControllerBase
     [HttpGet("revenue/monthly")]
     public async Task<IActionResult> GetMonthlyRevenue([FromQuery] int year = 0)
     {
-        year = year == 0 ? DateTime.UtcNow.Year : year;
+        year = year == 0 ? 2025 : year;
         var data = await _analytics.GetMonthlyRevenueAsync(year);
         return Ok(new ApiResponse<IEnumerable<MonthlyRevenue>> { Data = data });
     }
