@@ -1,63 +1,146 @@
 namespace FinchBi.Api.Models;
 
-public class RevenueSummary
+// Overview
+public class OverviewSummary
 {
-    public decimal TotalRevenue { get; set; }
-    public int TotalOrders { get; set; }
-    public int UniqueCustomers { get; set; }
-    public decimal AvgOrderValue { get; set; }
+    public decimal TotalRaised         { get; set; }
+    public int     DonorCount          { get; set; }
+    public int     CallsPlaced         { get; set; }
+    public decimal PledgeConversionPct { get; set; }
 }
 
-public class MonthlyRevenue
+// Donations
+public class DonationSummary
 {
-    public int Month { get; set; }
-    public string MonthName { get; set; } = "";
-    public decimal Revenue { get; set; }
-    public int Orders { get; set; }
-    public decimal AvgOrderValue { get; set; }
+    public decimal TotalRaised  { get; set; }
+    public int     TotalGifts   { get; set; }
+    public int     UniqueDonors { get; set; }
+    public decimal AvgGiftSize  { get; set; }
 }
 
-public class TopProduct
+public class MonthlyDonations
 {
-    public string ProductName { get; set; } = "";
-    public string Category { get; set; } = "";
-    public int UnitsSold { get; set; }
-    public decimal TotalRevenue { get; set; }
-    public decimal RevenuePct { get; set; }
+    public int     Month     { get; set; }
+    public string  MonthName { get; set; } = "";
+    public decimal Revenue   { get; set; }
+    public int     Gifts     { get; set; }
 }
 
-public class CustomerSegment
+public class CampaignBreakdown
 {
-    public string Segment { get; set; } = "";
-    public int CustomerCount { get; set; }
-    public decimal AvgLtv { get; set; }
-    public int AvgRecencyDays { get; set; }
+    public string  CampaignId { get; set; } = "";
+    public string  Label      { get; set; } = "";
+    public string  Color      { get; set; } = "";
+    public int     Goal       { get; set; }
+    public decimal Raised     { get; set; }
+    public decimal PctOfGoal  { get; set; }
 }
 
-public class RegionPerformance
+public class ChannelBreakdown
 {
-    public string Region { get; set; } = "";
-    public decimal Revenue { get; set; }
-    public int Orders { get; set; }
-    public int Customers { get; set; }
-    public decimal RevenuePerCustomer { get; set; }
+    public string  ChannelId  { get; set; } = "";
+    public string  Label      { get; set; } = "";
+    public string  Color      { get; set; } = "";
+    public decimal Revenue    { get; set; }
+    public int     Gifts      { get; set; }
+    public decimal PctOfTotal { get; set; }
 }
 
-public class InventoryItem
+public class DonationRow
 {
-    public string ProductId { get; set; } = "";
-    public string ProductName { get; set; } = "";
-    public string Category { get; set; } = "";
-    public int StockQuantity { get; set; }
-    public int ReorderPoint { get; set; }
-    public decimal UnitCost { get; set; }
-    public bool NeedsReorder { get; set; }
+    public string  GiftDate  { get; set; } = "";
+    public string  DonorName { get; set; } = "";
+    public string  Campaign  { get; set; } = "";
+    public string  Channel   { get; set; } = "";
+    public decimal Amount    { get; set; }
+    public string  Status    { get; set; } = "";
 }
 
+// Calls
+public class CallSummary
+{
+    public int     CallsPlaced    { get; set; }
+    public int     CallsConnected { get; set; }
+    public decimal ConnectRatePct { get; set; }
+    public int     PledgedCalls   { get; set; }
+    public decimal PledgeConvPct  { get; set; }
+    public decimal AvgDurationSec { get; set; }
+}
+
+public class CallOutcome
+{
+    public string  Outcome { get; set; } = "";
+    public int     Count   { get; set; }
+    public decimal Pct     { get; set; }
+}
+
+public class CallerLeaderboard
+{
+    public string  Name           { get; set; } = "";
+    public string  Role           { get; set; } = "";
+    public string  Tenure         { get; set; } = "";
+    public int     CallsPlaced    { get; set; }
+    public int     Connected      { get; set; }
+    public int     Pledges        { get; set; }
+    public decimal TotalPledged   { get; set; }
+    public decimal ConnectRatePct { get; set; }
+    public decimal ConvRatePct    { get; set; }
+}
+
+public class CallRow
+{
+    public string  CallTime      { get; set; } = "";
+    public string  CallerName    { get; set; } = "";
+    public string  Contact       { get; set; } = "";
+    public string  DurationLabel { get; set; } = "";
+    public string  Outcome       { get; set; } = "";
+    public decimal Pledge        { get; set; }
+    public string? NoteText      { get; set; }
+}
+
+// Donors
+public class DonorSegmentSummary
+{
+    public string  SegmentId   { get; set; } = "";
+    public string  Label       { get; set; } = "";
+    public string  Color       { get; set; } = "";
+    public int     Donors      { get; set; }
+    public decimal TotalRaised { get; set; }
+    public decimal AvgGift     { get; set; }
+}
+
+public class DonorLifecycle
+{
+    public string Lifecycle { get; set; } = "";
+    public int    Count     { get; set; }
+}
+
+public class DonorRosterRow
+{
+    public string  Name         { get; set; } = "";
+    public string  SegmentId    { get; set; } = "";
+    public string  SegmentLabel { get; set; } = "";
+    public string  FirstGift    { get; set; } = "";
+    public string  Lifecycle    { get; set; } = "";
+    public int     Gifts        { get; set; }
+    public decimal Total        { get; set; }
+    public decimal AvgGift      { get; set; }
+}
+
+public class AtRiskDonor
+{
+    public string  Name          { get; set; } = "";
+    public string  SegmentLabel  { get; set; } = "";
+    public string  FirstGift     { get; set; } = "";
+    public decimal LifetimeValue { get; set; }
+    public int     GiftCount     { get; set; }
+}
+
+// Shared wrapper
 public class ApiResponse<T>
 {
-    public bool Success { get; set; } = true;
-    public T? Data { get; set; }
-    public string? Error { get; set; }
+    public bool     Success   { get; set; } = true;
+    public T?       Data      { get; set; }
+    public string?  Error     { get; set; }
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 }

@@ -9,78 +9,126 @@ namespace FinchBi.Api.Controllers;
 [Produces("application/json")]
 public class AnalyticsController : ControllerBase
 {
-    private readonly SalesAnalyticsService _analytics;
-    private readonly DbService _db;
+    private readonly FinchBiService _svc;
+    private readonly DbService      _db;
     private readonly IConfiguration _config;
 
-    public AnalyticsController(SalesAnalyticsService analytics, DbService db, IConfiguration config)
+    public AnalyticsController(FinchBiService svc, DbService db, IConfiguration config)
     {
-        _analytics = analytics;
-        _db = db;
+        _svc    = svc;
+        _db     = db;
         _config = config;
     }
 
+    // Health
     [HttpGet("health")]
     public async Task<IActionResult> Health()
     {
         var version = await _db.ExecuteScalarAsync<string>("SELECT version();");
         var connStr = _config.GetConnectionString("Supabase") ?? "NOT FOUND";
-        var host = connStr.Split(';').FirstOrDefault(s => s.StartsWith("Host"))?.Split('=').LastOrDefault() ?? "unknown";
+        var host    = connStr.Split(';').FirstOrDefault(s => s.StartsWith("Host"))?.Split('=').LastOrDefault() ?? "unknown";
         return Ok(new { status = "ok", postgres = version, host, utc = DateTime.UtcNow });
     }
 
-    [HttpGet("debug")]
-    public async Task<IActionResult> Debug()
+    // Overview
+    [HttpGet("overview")]
+    public async Task<IActionResult> GetOverview()
     {
-        var count = await _db.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM orders;");
-        var delivered = await _db.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM orders WHERE status != 'CANCELLED';");
-        var revenue = await _db.ExecuteScalarAsync<decimal>("SELECT COALESCE(SUM(total_amount),0) FROM orders WHERE status != 'CANCELLED';");
-        var year2025 = await _db.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM orders WHERE EXTRACT(YEAR FROM order_date) = 2025 AND status != 'CANCELLED';");
-        var rev2025 = await _db.ExecuteScalarAsync<decimal>("SELECT COALESCE(SUM(total_amount),0) FROM orders WHERE EXTRACT(YEAR FROM order_date) = 2025 AND status != 'CANCELLED';");
-        return Ok(new { totalOrders = count, delivered, totalRevenue = revenue, orders2025 = year2025, revenue2025 = rev2025 });
+        var data = await _svc.GetOverviewAsync();
+        return Ok(new ApiResponse<OverviewSummary> { Data = data });
     }
 
-    [HttpGet("revenue/summary")]
-    public async Task<IActionResult> GetRevenueSummary([FromQuery] int year = 0)
+    // Donations
+    [HttpGet("donations/summary")]
+    public async Task<IActionResult> GetDonationSummary()
     {
-        year = year == 0 ? 2025 : year;
-        var data = await _analytics.GetRevenueSummaryAsync(year);
-        return Ok(new ApiResponse<RevenueSummary> { Data = data });
+        var data = await _svc.GetDonationSummaryAsync();
+        return Ok(new ApiResponse<DonationSummary> { Data = data });
     }
 
-    [HttpGet("revenue/monthly")]
-    public async Task<IActionResult> GetMonthlyRevenue([FromQuery] int year = 0)
+    [HttpGet("donations/monthly")]
+    public async Task<IActionResult> GetMonthlyDonations()
     {
-        year = year == 0 ? 2025 : year;
-        var data = await _analytics.GetMonthlyRevenueAsync(year);
-        return Ok(new ApiResponse<IEnumerable<MonthlyRevenue>> { Data = data });
+        var data = await _svc.GetMonthlyDonationsAsync();
+        return Ok(new ApiResponse<IEnumerable<MonthlyDonations>> { Data = data });
     }
 
-    [HttpGet("products/top")]
-    public async Task<IActionResult> GetTopProducts([FromQuery] int n = 10)
+    [HttpGet("donations/campaigns")]
+    public async Task<IActionResult> GetCampaigns()
     {
-        var data = await _analytics.GetTopProductsAsync(n);
-        return Ok(new ApiResponse<IEnumerable<TopProduct>> { Data = data });
+        var data = await _svc.GetCampaignBreakdownAsync();
+        return Ok(new ApiResponse<IEnumerable<CampaignBreakdown>> { Data = data });
     }
 
-    [HttpGet("customers/segments")]
-    public async Task<IActionResult> GetCustomerSegments()
+    [HttpGet("donations/channels")]
+    public async Task<IActionResult> GetChannels()
     {
-        var data = await _analytics.GetCustomerSegmentsAsync();
-        return Ok(new ApiResponse<IEnumerable<CustomerSegment>> { Data = data });
+        var data = await _svc.GetChannelBreakdownAsync();
+        return Ok(new ApiResponse<IEnumerable<ChannelBreakdown>> { Data = data });
     }
 
-    [HttpGet("regions")]
-    public async Task<IActionResult> GetRegionPerformance()
+    [HttpGet("donations/list")]
+    public async Task<IActionResult> GetDonationList([FromQuery] int limit = 100)
     {
-        var data = await _analytics.GetRegionPerformanceAsync();
-        return Ok(new ApiResponse<IEnumerable<RegionPerformance>> { Data = data });
+        var data = await _svc.GetDonationRowsAsync(limit);
+        return Ok(new ApiResponse<IEnumerable<DonationRow>> { Data = data });
     }
 
-    [HttpGet("inventory/low-stock")]
-    public async Task<IActionResult> GetLowStock([FromQuery] int threshold = 50)
+    // Calls
+    [HttpGet("calls/summary")]
+    public async Task<IActionResult> GetCallSummary()
     {
-        var data = await _analytics.GetLowStockAsync(threshold);
-        return Ok(new ApiResponse<IEnumerable<InventoryItem>> { Data = data });
+        var data = await _svc.GetCallSummaryAsync();
+        return Ok(new ApiResponse<CallSummary> { Data = data });
+    }
+
+    [HttpGet("calls/outcomes")]
+    public async Task<IActionResult> GetCallOutcomes()
+    {
+        var data = await _svc.GetCallOutcomesAsync();
+        return Ok(new ApiResponse<IEnumerable<CallOutcome>> { Data = data });
+    }
+
+    [HttpGet("calls/leaderboard")]
+    public async Task<IActionResult> GetCallerLeaderboard()
+    {
+        var data = await _svc.GetCallerLeaderboardAsync();
+        return Ok(new ApiResponse<IEnumerable<CallerLeaderboard>> { Data = data });
+    }
+
+    [HttpGet("calls/list")]
+    public async Task<IActionResult> GetCallList([FromQuery] int limit = 100)
+    {
+        var data = await _svc.GetCallRowsAsync(limit);
+        return Ok(new ApiResponse<IEnumerable<CallRow>> { Data = data });
+    }
+
+    // Donors
+    [HttpGet("donors/segments")]
+    public async Task<IActionResult> GetDonorSegments()
+    {
+        var data = await _svc.GetDonorSegmentsAsync();
+        return Ok(new ApiResponse<IEnumerable<DonorSegmentSummary>> { Data = data });
+    }
+
+    [HttpGet("donors/lifecycle")]
+    public async Task<IActionResult> GetDonorLifecycle()
+    {
+        var data = await _svc.GetDonorLifecycleAsync();
+        return Ok(new ApiResponse<IEnumerable<DonorLifecycle>> { Data = data });
+    }
+
+    [HttpGet("donors/roster")]
+    public async Task<IActionResult> GetDonorRoster()
+    {
+        var data = await _svc.GetDonorRosterAsync();
+        return Ok(new ApiResponse<IEnumerable<DonorRosterRow>> { Data = data });
+    }
+
+    [HttpGet("donors/at-risk")]
+    public async Task<IActionResult> GetAtRiskDonors()
+    {
+        var data = await _svc.GetAtRiskDonorsAsync();
+        return Ok(new ApiResponse<IEnumerable<AtRiskDonor>> { Data = data });
     }
 }

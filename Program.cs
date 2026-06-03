@@ -8,14 +8,14 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new()
     {
-        Title = "FinchBi Sales API",
-        Version = "v1",
-        Description = "ASP.NET Core 8 + Supabase (Postgres) analytics backend"
+        Title       = "Finch BI API",
+        Version     = "v1",
+        Description = "ASP.NET Core 8 + Neon (Postgres) — Donations & Calls analytics backend"
     });
 });
 
 builder.Services.AddSingleton<DbService>();
-builder.Services.AddScoped<SalesAnalyticsService>();
+builder.Services.AddScoped<FinchBiService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
     p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
@@ -26,7 +26,7 @@ app.UseCors();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "FinchBi API v1");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Finch BI API v1");
     c.RoutePrefix = string.Empty;
 });
 
