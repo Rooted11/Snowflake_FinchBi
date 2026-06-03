@@ -16,7 +16,7 @@ public class SalesAnalyticsService
                 COALESCE(SUM(total_amount), 0)            AS ""TotalRevenue"",
                 COUNT(DISTINCT order_id)::int             AS ""TotalOrders"",
                 COUNT(DISTINCT customer_id)::int          AS ""UniqueCustomers"",
-                COALESCE(AVG(total_amount), 0)            AS ""AvgOrderValue""
+                ROUND(COALESCE(AVG(total_amount), 0)::numeric, 2)  AS ""AvgOrderValue""
             FROM orders
             WHERE EXTRACT(YEAR FROM order_date) = @year
               AND status != 'CANCELLED';";
