@@ -2,444 +2,533 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Finch BI · Donations & Calls</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.5.0/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F6F2;--surface:#FFFFFF;--surface-2:#F1EFE8;
+  --text:#1E1E1B;--text-2:#5F5E5A;--text-3:#888780;
+  --border:rgba(0,0,0,0.08);--border-2:rgba(0,0,0,0.15);
+  --brand:#0F6E56;--brand-2:#1D9E75;--accent:#D85A30;
+  --warn:#BA7517;--info:#185FA5;--purple:#534AB7;
+  --radius-md:8px;--radius-lg:12px;--sidebar-w:220px;
+}
+@media(prefers-color-scheme:dark){
   :root{
-    --bg:#0f1117;--surface:#1a1d27;--surface2:#222638;--border:#2a2d3d;
-    --text:#e8eaf0;--muted:#8b8fa8;
-    --green:#34d399;--amber:#fbbf24;--red:#f87171;--purple:#a78bfa;--blue:#4f8ef7;--teal:#2dd4bf;
+    --bg:#161614;--surface:#1F1F1D;--surface-2:#2A2A28;
+    --text:#F1EFE8;--text-2:#B4B2A9;--text-3:#888780;
+    --border:rgba(255,255,255,0.08);--border-2:rgba(255,255,255,0.15);
   }
-  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 
-  /* header */
-  header{background:var(--surface);border-bottom:1px solid var(--border);padding:.9rem 2rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
-  .logo{width:34px;height:34px;background:#0F6E56;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex-shrink:0}
-  header h1{font-size:17px;font-weight:600}
-  .status{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
-  .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+/* LAYOUT */
+.app{display:flex;min-height:100vh}
+.sidebar{display:none}
+.main{flex:1;min-width:0}
 
-  /* tabs */
-  .tabs{background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:0;padding:0 2rem;overflow-x:auto;scrollbar-width:none}
-  .tabs::-webkit-scrollbar{display:none}
-  .tab{padding:.7rem 1.1rem;font-size:13px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;user-select:none;background:none;border-top:none;border-left:none;border-right:none;border-bottom:2px solid transparent;font-family:inherit}
-  .tab.active{color:var(--text);border-bottom-color:#0F6E56;font-weight:500}
+@media(min-width:900px){
+  .sidebar{display:flex;flex-direction:column;width:var(--sidebar-w);flex-shrink:0;background:var(--surface);border-right:0.5px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto;padding:14px 10px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:6px 8px 14px;margin-bottom:8px;border-bottom:0.5px solid var(--border)}
+  .sb-brand .b-icon{width:32px;height:32px;border-radius:8px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center}
+  .sb-brand .b-icon i{font-size:18px}
+  .sb-brand .b-title{font-size:14px;font-weight:600}
+  .sb-brand .b-sub{font-size:10px;color:var(--text-2)}
+  .nav-section{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);padding:10px 10px 4px;font-weight:600}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:13px;color:var(--text-2);cursor:pointer;background:none;border:none;font-family:inherit;width:100%;text-align:left;transition:background .12s,color .12s;margin-bottom:1px}
+  .nav-item:hover{background:var(--surface-2);color:var(--text)}
+  .nav-item.active{background:linear-gradient(90deg,rgba(15,110,86,.08),rgba(15,110,86,.02));color:var(--text);font-weight:500;position:relative}
+  .nav-item.active::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--brand)}
+  .nav-item.active i,.nav-item:hover i{color:var(--brand)}
+  .nav-item i{font-size:17px;flex-shrink:0;color:var(--text-3);transition:color .12s}
+  .sb-footer{margin-top:auto;padding:14px 10px 0;border-top:0.5px solid var(--border);font-size:10px;color:var(--text-3)}
+}
 
-  /* layout */
-  main{padding:1.5rem 2rem 3rem;max-width:1400px;margin:0 auto}
-  .panel{display:none}.panel.active{display:block}
-  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:1.25rem}
-  .grid-2{display:grid;grid-template-columns:3fr 2fr;gap:14px;margin-bottom:14px}
-  .grid-2b{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
-  .mb{margin-bottom:14px}
+.wrap{max-width:1100px;margin:0 auto;padding:14px 12px 80px}
+@media(min-width:640px){.wrap{padding:18px 18px 60px}}
 
-  /* kpi cards */
-  .kpi{background:var(--surface);border:1px solid var(--border);border-top:3px solid #0F6E56;border-radius:10px;padding:1.1rem 1.25rem}
-  .kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-  .kpi-value{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
-  .kpi-sub{font-size:11px;color:var(--green);margin-top:4px}
+/* HEADER */
+.header{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.02)}
+.header-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(15,110,86,.25)}
+.brand-icon i{font-size:19px}
+.brand-title{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.brand-sub{font-size:11px;color:var(--text-2);margin-top:1px}
+@media(min-width:900px){.header .brand{display:none}}
+.pills{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.pill{font-size:10px;padding:3px 9px;border-radius:10px;background:var(--surface-2);color:var(--text-2)}
+.pill.p-brand{background:#E1F5EE;color:#085041}
+.pill.p-info{background:#E6F1FB;color:#0C447C}
+.refresh-btn{background:var(--surface-2);border:0.5px solid var(--border-2);color:var(--text);font-size:11px;padding:6px 11px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-family:inherit;min-height:32px}
+.refresh-btn:active{transform:scale(.97)}
+.refresh-btn i{font-size:12px}
+.spinning i{animation:spin .6s linear}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-  /* cards */
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.25rem}
-  .card-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.9rem}
-  canvas{max-height:240px}
+/* TABS (mobile) */
+.tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:0.5px solid var(--border);margin-bottom:14px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:10px 14px;font-size:13px;color:var(--text-2);white-space:nowrap;cursor:pointer;border:none;border-bottom:2px solid transparent;background:transparent;font-family:inherit;user-select:none}
+.tab.active{color:var(--text);border-bottom-color:var(--brand);font-weight:500}
+@media(min-width:900px){.tabs{display:none}}
 
-  /* tables */
-  .tbl-wrap{overflow-x:auto}
-  table{width:100%;border-collapse:collapse;font-size:12px}
-  th{text-align:left;padding:7px 10px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;white-space:nowrap}
-  td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
-  tr:last-child td{border-bottom:none}
-  tr:hover td{background:rgba(79,142,247,.04)}
-  td.right{text-align:right;font-variant-numeric:tabular-nums}
-  td.muted{color:var(--muted)}
+/* PANELS */
+.panel{display:none}
+.panel.active{display:block;animation:fadeIn .22s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
-  /* badges */
-  .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
-  .bg{background:rgba(52,211,153,.15);color:var(--green)}
-  .ba{background:rgba(251,191,36,.15);color:var(--amber)}
-  .br{background:rgba(248,113,113,.15);color:var(--red)}
-  .bp{background:rgba(167,139,250,.15);color:var(--purple)}
-  .bb{background:rgba(79,142,247,.15);color:var(--blue)}
-  .bt{background:rgba(45,212,191,.15);color:var(--teal)}
+/* GRID */
+.grid{display:grid;gap:10px}
+.grid-kpi{grid-template-columns:repeat(2,1fr)}
+.grid-2,.grid-3{grid-template-columns:1fr}
+@media(min-width:640px){
+  .grid-kpi{grid-template-columns:repeat(4,1fr)}
+  .grid-2{grid-template-columns:1fr 1fr}
+  .grid-3{grid-template-columns:2fr 1fr}
+}
+.mb-12{margin-bottom:12px}.mb-14{margin-bottom:14px}
 
-  /* bar rows */
-  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:12px}
-  .bar-label{width:140px;flex-shrink:0;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .bar-track{flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden}
-  .bar-fill{height:100%;border-radius:4px;transition:width .7s ease}
-  .bar-val{width:65px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+/* SECTION HEADING */
+.section-heading{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);font-weight:600;margin:16px 0 8px;padding-left:2px}
 
-  .loading{color:var(--muted);font-size:13px;text-align:center;padding:2rem}
-  .err{color:var(--red);font-size:13px;text-align:center;padding:2rem}
+/* KPI */
+.kpi{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--brand),var(--brand-2));opacity:.85}
+.kpi:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.04)}
+.kpi-label{font-size:10px;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.kpi-value{font-size:24px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.kpi-delta{font-size:11px;margin-top:4px;display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-weight:500}
+.delta-up{color:#085041;background:#E1F5EE}
+.delta-warn{color:#854F0B;background:#FAEEDA}
 
-  @media(max-width:900px){
-    .kpi-grid{grid-template-columns:repeat(2,1fr)}
-    .grid-2,.grid-2b,.grid-3{grid-template-columns:1fr}
-    main{padding:1rem 1rem 3rem}
-  }
+/* CARDS */
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;position:relative;box-shadow:0 1px 2px rgba(0,0,0,.02);transition:box-shadow .2s}
+.card:hover{box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:10px;flex-wrap:wrap}
+.card-title{font-size:13px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+.card-sub{font-size:11px;color:var(--text-3);font-weight:500}
+
+/* LEGEND */
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;font-size:11px;color:var(--text-2)}
+.legend span{display:flex;align-items:center;gap:4px}
+.legend-sw{width:10px;height:10px;border-radius:2px;display:inline-block}
+
+/* CHART */
+.chart-wrap{position:relative;width:100%}
+.h-200{height:200px}.h-220{height:220px}.h-240{height:240px}
+
+/* BAR ROWS */
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:12px}
+.bar-label{width:145px;flex-shrink:0;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.bar-val{width:70px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums;font-size:12px}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
+thead tr{border-bottom:0.5px solid var(--border-2)}
+th{padding:8px 8px;color:var(--text-2);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.03em;text-align:left;white-space:nowrap}
+td{padding:9px 8px;border-bottom:0.5px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--surface-2)}
+td.right{text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
+td.muted{color:var(--text-2)}
+
+/* STATUS BADGES */
+.status{font-size:10px;padding:2px 8px;border-radius:10px;text-transform:capitalize;white-space:nowrap;font-weight:500}
+.s-completed,.s-active,.s-answered{background:#E1F5EE;color:#085041}
+.s-pending,.s-lapsed,.s-voicemail{background:#FAEEDA;color:#854F0B}
+.s-failed,.s-missed{background:#FCEBEB;color:#791F1F}
+.s-new{background:#E6F1FB;color:#0C447C}
+.s-reactivated{background:#EEEDFE;color:#3C3489}
+
+/* DOT */
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--brand-2);display:inline-block;margin-right:4px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* FOOTER */
+.footer{margin-top:40px;padding:16px 0;border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--text-3)}
 </style>
 </head>
 <body>
+<div class="app">
 
-<header>
-  <div class="logo">F</div>
-  <h1>Finch BI</h1>
-  <div class="status"><div class="dot"></div><span id="status-text">Connecting…</span></div>
-</header>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-brand">
+    <div class="b-icon"><i class="ti ti-heart-handshake"></i></div>
+    <div><div class="b-title">Finch BI</div><div class="b-sub">Nassen Solutions</div></div>
+  </div>
+  <div class="nav-section">Reports</div>
+  <button class="nav-item active" data-panel="overview"><i class="ti ti-layout-dashboard"></i> Overview</button>
+  <button class="nav-item" data-panel="donations"><i class="ti ti-currency-dollar"></i> Donations</button>
+  <button class="nav-item" data-panel="calls"><i class="ti ti-phone"></i> Calls</button>
+  <button class="nav-item" data-panel="donors"><i class="ti ti-users"></i> Donors</button>
+  <div class="sb-footer"><div>Finch BI · v2.0</div><div>Neon · Live data</div></div>
+</aside>
 
-<div class="tabs">
-  <button class="tab active" data-panel="overview">Overview</button>
-  <button class="tab" data-panel="donations">Donations</button>
-  <button class="tab" data-panel="calls">Calls</button>
-  <button class="tab" data-panel="donors">Donors</button>
-</div>
+<!-- MAIN -->
+<main class="main">
+<div class="wrap">
 
-<main>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <div class="brand">
+        <div class="brand-icon"><i class="ti ti-heart-handshake"></i></div>
+        <div><div class="brand-title">Donations &amp; Calls</div><div class="brand-sub">Finch BI · Nassen Solutions</div></div>
+      </div>
+      <div class="pills">
+        <span class="pill p-brand"><span class="live-dot"></span>Live</span>
+        <span class="pill p-info">Neon DB</span>
+        <span class="pill" id="lastRefresh">—</span>
+        <button class="refresh-btn" id="refreshBtn"><i class="ti ti-refresh"></i> Refresh</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE TABS -->
+  <div class="tabs">
+    <button class="tab active" data-panel="overview">Overview</button>
+    <button class="tab" data-panel="donations">Donations</button>
+    <button class="tab" data-panel="calls">Calls</button>
+    <button class="tab" data-panel="donors">Donors</button>
+  </div>
 
   <!-- OVERVIEW -->
   <div class="panel active" id="panel-overview">
-    <div class="kpi-grid">
-      <div class="kpi"><div class="kpi-label">Total Raised</div><div class="kpi-value" id="ov-raised">—</div><div class="kpi-sub">FY26 YTD · completed gifts</div></div>
-      <div class="kpi"><div class="kpi-label">Active Donors</div><div class="kpi-value" id="ov-donors">—</div><div class="kpi-sub">with at least one gift</div></div>
-      <div class="kpi"><div class="kpi-label">Calls Placed</div><div class="kpi-value" id="ov-calls">—</div><div class="kpi-sub">outbound this period</div></div>
-      <div class="kpi"><div class="kpi-label">Pledge Conversion</div><div class="kpi-value" id="ov-conv">—</div><div class="kpi-sub">of answered calls</div></div>
+    <div class="grid grid-kpi mb-12" id="ov-kpis"></div>
+
+    <div class="section-heading">Donations snapshot</div>
+    <div class="grid grid-3 mb-12">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Monthly donations</div><div class="card-sub">by gift date</div></div>
+        <div class="legend"><span><span class="legend-sw" style="background:#0F6E56"></span>Raised</span></div>
+        <div class="chart-wrap h-220"><canvas id="chart-monthly"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">By channel</div><div class="card-sub">completed gifts</div></div>
+        <div class="chart-wrap h-200"><canvas id="chart-channels"></canvas></div>
+        <div class="legend" id="channel-legend" style="margin-top:8px"></div>
+      </div>
     </div>
-    <div class="grid-2">
+
+    <div class="section-heading">Calls snapshot</div>
+    <div class="grid grid-3 mb-12">
       <div class="card">
-        <div class="card-title">Monthly Donations</div>
-        <canvas id="chart-monthly"></canvas>
+        <div class="card-head"><div class="card-title">Caller leaderboard</div><div class="card-sub">total pledged</div></div>
+        <div id="caller-bars"><div style="color:var(--text-3);font-size:12px;padding:1rem 0">Loading…</div></div>
       </div>
       <div class="card">
-        <div class="card-title">By Channel</div>
-        <canvas id="chart-channels-ov"></canvas>
+        <div class="card-head"><div class="card-title">Call outcomes</div><div class="card-sub">all calls</div></div>
+        <div class="chart-wrap h-200"><canvas id="chart-outcomes"></canvas></div>
+        <div class="legend" id="outcome-legend" style="margin-top:8px"></div>
       </div>
     </div>
-    <div class="grid-2b">
-      <div class="card">
-        <div class="card-title">Campaign Progress vs Goal</div>
-        <div id="campaign-bars"><div class="loading">Loading…</div></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Donor Segments</div>
-        <div id="segments-ov"><div class="loading">Loading…</div></div>
-      </div>
+
+    <div class="section-heading">Campaign progress</div>
+    <div class="card mb-12">
+      <div class="card-head"><div class="card-title">Raised vs goal</div><div class="card-sub">FY26 targets</div></div>
+      <div id="campaign-bars"><div style="color:var(--text-3);font-size:12px">Loading…</div></div>
     </div>
   </div>
 
   <!-- DONATIONS -->
   <div class="panel" id="panel-donations">
-    <div class="kpi-grid">
-      <div class="kpi"><div class="kpi-label">Total Raised</div><div class="kpi-value" id="don-raised">—</div><div class="kpi-sub">completed gifts</div></div>
-      <div class="kpi"><div class="kpi-label">Total Gifts</div><div class="kpi-value" id="don-gifts">—</div><div class="kpi-sub">transactions</div></div>
-      <div class="kpi"><div class="kpi-label">Unique Donors</div><div class="kpi-value" id="don-donors">—</div><div class="kpi-sub">gave at least once</div></div>
-      <div class="kpi"><div class="kpi-label">Avg Gift Size</div><div class="kpi-value" id="don-avg">—</div><div class="kpi-sub">per transaction</div></div>
-    </div>
-    <div class="grid-2b mb">
+    <div class="grid grid-kpi mb-12" id="don-kpis"></div>
+    <div class="grid grid-2 mb-12">
       <div class="card">
-        <div class="card-title">By Campaign</div>
-        <canvas id="chart-campaigns"></canvas>
+        <div class="card-head"><div class="card-title">By campaign</div><div class="card-sub">total raised</div></div>
+        <div class="chart-wrap h-240"><canvas id="chart-campaigns"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-title">By Channel</div>
-        <canvas id="chart-channels-don"></canvas>
+        <div class="card-head"><div class="card-title">By channel</div><div class="card-sub">gift count</div></div>
+        <div class="chart-wrap h-240"><canvas id="chart-channels-don"></canvas></div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">All Donations</div>
-      <div id="don-table"><div class="loading">Loading…</div></div>
+    <div class="card mb-14">
+      <div class="card-head"><div class="card-title">All donations</div><div class="card-sub" id="don-count"></div></div>
+      <div class="tbl-wrap" id="don-table"><div style="color:var(--text-3);padding:1rem;font-size:12px">Loading…</div></div>
     </div>
   </div>
 
   <!-- CALLS -->
   <div class="panel" id="panel-calls">
-    <div class="kpi-grid">
-      <div class="kpi"><div class="kpi-label">Calls Placed</div><div class="kpi-value" id="call-placed">—</div><div class="kpi-sub">outbound total</div></div>
-      <div class="kpi"><div class="kpi-label">Connect Rate</div><div class="kpi-value" id="call-connect">—</div><div class="kpi-sub">answered calls</div></div>
-      <div class="kpi"><div class="kpi-label">Pledge Conversion</div><div class="kpi-value" id="call-conv">—</div><div class="kpi-sub">of answered calls</div></div>
-      <div class="kpi"><div class="kpi-label">Avg Duration</div><div class="kpi-value" id="call-dur">—</div><div class="kpi-sub">connected calls</div></div>
-    </div>
-    <div class="grid-2b mb">
+    <div class="grid grid-kpi mb-12" id="call-kpis"></div>
+    <div class="grid grid-2 mb-12">
       <div class="card">
-        <div class="card-title">Caller Leaderboard</div>
-        <div id="caller-bars"><div class="loading">Loading…</div></div>
+        <div class="card-head"><div class="card-title">Caller leaderboard</div><div class="card-sub">pledges secured</div></div>
+        <div id="caller-bars-full"><div style="color:var(--text-3);font-size:12px;padding:.5rem 0">Loading…</div></div>
       </div>
       <div class="card">
-        <div class="card-title">Call Outcomes</div>
-        <canvas id="chart-outcomes"></canvas>
+        <div class="card-head"><div class="card-title">Call outcomes</div><div class="card-sub">breakdown</div></div>
+        <div class="chart-wrap h-240"><canvas id="chart-outcomes-calls"></canvas></div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">All Calls</div>
-      <div id="calls-table"><div class="loading">Loading…</div></div>
+    <div class="card mb-14">
+      <div class="card-head"><div class="card-title">All calls</div><div class="card-sub" id="call-count"></div></div>
+      <div class="tbl-wrap" id="calls-table"><div style="color:var(--text-3);padding:1rem;font-size:12px">Loading…</div></div>
     </div>
   </div>
 
   <!-- DONORS -->
   <div class="panel" id="panel-donors">
-    <div class="grid-2b mb">
+    <div class="grid grid-2 mb-12">
       <div class="card">
-        <div class="card-title">Donor Lifecycle</div>
-        <canvas id="chart-lifecycle"></canvas>
+        <div class="card-head"><div class="card-title">Donor lifecycle</div><div class="card-sub">all donors on file</div></div>
+        <div class="chart-wrap h-220"><canvas id="chart-lifecycle"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-title">Segment Breakdown</div>
-        <div id="seg-table"><div class="loading">Loading…</div></div>
+        <div class="card-head"><div class="card-title">Segment breakdown</div><div class="card-sub">by total raised</div></div>
+        <div id="seg-bars"><div style="color:var(--text-3);font-size:12px;padding:.5rem 0">Loading…</div></div>
       </div>
     </div>
-    <div class="card mb">
-      <div class="card-title">Donor Roster</div>
-      <div id="roster-table"><div class="loading">Loading…</div></div>
+    <div class="card mb-12">
+      <div class="card-head"><div class="card-title">Donor roster</div><div class="card-sub" id="roster-count"></div></div>
+      <div class="tbl-wrap" id="roster-table"><div style="color:var(--text-3);padding:1rem;font-size:12px">Loading…</div></div>
     </div>
-    <div class="card">
-      <div class="card-title">At-Risk Donors · lapsed</div>
-      <div id="atrisk-table"><div class="loading">Loading…</div></div>
+    <div class="card mb-14">
+      <div class="card-head"><div class="card-title">At-risk donors <span style="color:var(--text-3);font-weight:400;font-size:11px">· lapsed</span></div></div>
+      <div class="tbl-wrap" id="atrisk-table"><div style="color:var(--text-3);padding:1rem;font-size:12px">Loading…</div></div>
     </div>
   </div>
 
+  <div class="footer">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="brand-icon" style="width:22px;height:22px;border-radius:5px"><i class="ti ti-heart-handshake" style="font-size:13px"></i></div>
+      <div><strong style="color:var(--text)">Finch BI</strong> · Nassen Solutions</div>
+    </div>
+    <div>© 2026 Nassen Solutions · build 2026.06</div>
+  </div>
+
+</div>
 </main>
+</div>
 
 <script>
 const API = 'https://snowflake-finchbi.onrender.com/api/Analytics';
 
-function fmt(n)  { return '$' + Math.round(Number(n)).toLocaleString('en-US'); }
-function fmtK(n) { return Number(n) >= 1000 ? '$' + (Number(n)/1000).toFixed(1) + 'K' : fmt(n); }
-function fmtDur(sec) { const s = Math.round(Number(sec)); return s > 0 ? Math.floor(s/60) + ':' + String(s%60).padStart(2,'0') : '—'; }
+function fmt(n)  { return '$' + Math.round(+n).toLocaleString('en-US'); }
+function fmtK(n) { return +n >= 1000 ? '$' + (+n/1000).toFixed(1)+'K' : fmt(n); }
+function fmtDur(s){ s=Math.round(+s); return s>0 ? Math.floor(s/60)+':'+String(s%60).padStart(2,'0') : '—'; }
 
-// Tab switching
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+// Tab / nav switching
+function switchPanel(key){
+  document.querySelectorAll('.tab,.nav-item').forEach(el=>{
+    el.classList.toggle('active', el.dataset.panel===key);
   });
+  document.querySelectorAll('.panel').forEach(p=>{
+    p.classList.toggle('active', p.id==='panel-'+key);
+  });
+}
+document.querySelectorAll('.tab,.nav-item').forEach(el=>{
+  el.addEventListener('click',()=>switchPanel(el.dataset.panel));
 });
 
-const charts = {};
-function makeChart(id, config) {
-  if (charts[id]) charts[id].destroy();
-  charts[id] = new Chart(document.getElementById(id), config);
+// Refresh button
+document.getElementById('refreshBtn').addEventListener('click', e=>{
+  e.currentTarget.classList.add('spinning');
+  loadAll().finally(()=>e.currentTarget.classList.remove('spinning'));
+});
+
+const C = {}; // chart registry
+function mkChart(id,cfg){ if(C[id])C[id].destroy(); const el=document.getElementById(id); if(el)C[id]=new Chart(el,cfg); }
+
+const gridColor='rgba(127,127,127,0.1)';
+const tickStyle={color:'#888780',font:{size:11}};
+const axBase={grid:{color:gridColor},ticks:tickStyle};
+const axY = cb => ({...axBase, ticks:{...tickStyle, callback:cb}});
+
+const OUTCOME_COLORS = {answered:'#1D9E75',voicemail:'#7F77DD',missed:'#D85A30'};
+const LC_COLORS = {active:'#1D9E75',new:'#185FA5',reactivated:'#7F77DD',lapsed:'#D85A30'};
+
+function kpiCard(label,value,sub,deltaClass='delta-up'){
+  return `<div class="kpi">
+    <div class="kpi-label">${label}</div>
+    <div class="kpi-value">${value}</div>
+    <div class="kpi-delta ${deltaClass}"><i class="ti ti-trending-up"></i>${sub}</div>
+  </div>`;
 }
 
-const DARK = { grid: { color: '#2a2d3d' }, ticks: { color: '#8b8fa8', font: { size: 11 } } };
+function statusBadge(s){
+  const map={completed:'s-completed',pending:'s-pending',failed:'s-failed',answered:'s-answered',voicemail:'s-voicemail',missed:'s-missed',active:'s-active',new:'s-new',lapsed:'s-lapsed',reactivated:'s-reactivated'};
+  return `<span class="status ${map[s]||''}">${s}</span>`;
+}
 
-async function go() {
-  try {
-    const [overview, donSum, monthly, campaigns, channels, donList,
-           callSum, outcomes, leaderboard, callList,
-           segments, lifecycle, roster, atRisk] = await Promise.all([
-      fetch(`${API}/overview`).then(r=>r.json()),
-      fetch(`${API}/donations/summary`).then(r=>r.json()),
-      fetch(`${API}/donations/monthly`).then(r=>r.json()),
-      fetch(`${API}/donations/campaigns`).then(r=>r.json()),
-      fetch(`${API}/donations/channels`).then(r=>r.json()),
-      fetch(`${API}/donations/list?limit=50`).then(r=>r.json()),
-      fetch(`${API}/calls/summary`).then(r=>r.json()),
-      fetch(`${API}/calls/outcomes`).then(r=>r.json()),
-      fetch(`${API}/calls/leaderboard`).then(r=>r.json()),
-      fetch(`${API}/calls/list?limit=50`).then(r=>r.json()),
-      fetch(`${API}/donors/segments`).then(r=>r.json()),
-      fetch(`${API}/donors/lifecycle`).then(r=>r.json()),
-      fetch(`${API}/donors/roster`).then(r=>r.json()),
-      fetch(`${API}/donors/at-risk`).then(r=>r.json()),
-    ]);
+function barRows(items, labelKey, valKey, colorFn, fmtFn=fmtK){
+  const max = Math.max(...items.map(i=>+i[valKey]),1);
+  return items.map(i=>`
+    <div class="bar-row">
+      <div class="bar-label" title="${i[labelKey]}">${i[labelKey]}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(+i[valKey]/max*100)}%;background:${colorFn(i)}"></div></div>
+      <div class="bar-val">${fmtFn(+i[valKey])}</div>
+    </div>`).join('');
+}
 
-    document.getElementById('status-text').textContent = 'Live · Neon DB';
+function legendHtml(labels,colors){
+  return labels.map((l,i)=>`<span><span class="legend-sw" style="background:${colors[i]}"></span>${l}</span>`).join('');
+}
 
-    // ── OVERVIEW KPIs ──
-    const ov = overview.data;
-    document.getElementById('ov-raised').textContent  = fmt(ov.totalRaised);
-    document.getElementById('ov-donors').textContent  = ov.donorCount;
-    document.getElementById('ov-calls').textContent   = ov.callsPlaced;
-    document.getElementById('ov-conv').textContent    = ov.pledgeConversionPct + '%';
+async function loadAll(){
+  const now = new Date();
+  document.getElementById('lastRefresh').textContent =
+    'Refreshed ' + now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
 
-    // Monthly bar chart
-    makeChart('chart-monthly', {
-      type: 'bar',
-      data: {
-        labels: monthly.data.map(m => m.monthName),
-        datasets: [{ data: monthly.data.map(m => m.revenue), backgroundColor: '#0F6E56', borderRadius: 4, borderSkipped: false }]
-      },
-      options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ x:DARK, y:{...DARK, ticks:{...DARK.ticks, callback: v=>fmtK(v)}} } }
-    });
+  const [ov, donSum, monthly, campaigns, channels, donList,
+         callSum, outcomes, leaderboard, callList,
+         segments, lifecycle, roster, atRisk] = await Promise.all([
+    fetch(`${API}/overview`).then(r=>r.json()),
+    fetch(`${API}/donations/summary`).then(r=>r.json()),
+    fetch(`${API}/donations/monthly`).then(r=>r.json()),
+    fetch(`${API}/donations/campaigns`).then(r=>r.json()),
+    fetch(`${API}/donations/channels`).then(r=>r.json()),
+    fetch(`${API}/donations/list?limit=50`).then(r=>r.json()),
+    fetch(`${API}/calls/summary`).then(r=>r.json()),
+    fetch(`${API}/calls/outcomes`).then(r=>r.json()),
+    fetch(`${API}/calls/leaderboard`).then(r=>r.json()),
+    fetch(`${API}/calls/list?limit=50`).then(r=>r.json()),
+    fetch(`${API}/donors/segments`).then(r=>r.json()),
+    fetch(`${API}/donors/lifecycle`).then(r=>r.json()),
+    fetch(`${API}/donors/roster`).then(r=>r.json()),
+    fetch(`${API}/donors/at-risk`).then(r=>r.json()),
+  ]);
 
-    // Channel donut (overview)
-    makeChart('chart-channels-ov', {
-      type: 'doughnut',
-      data: {
-        labels: channels.data.map(c => c.label),
-        datasets: [{ data: channels.data.map(c => c.revenue), backgroundColor: channels.data.map(c => c.color), borderWidth: 0, hoverOffset: 6 }]
-      },
-      options: { responsive:true, plugins:{ legend:{ position:'bottom', labels:{ color:'#8b8fa8', font:{size:11}, padding:10, boxWidth:12 } } } }
-    });
+  const o=ov.data, ds=donSum.data, cs=callSum.data;
 
-    // Campaign progress bars
-    const maxGoal = Math.max(...campaigns.data.map(c => c.goal));
-    document.getElementById('campaign-bars').innerHTML = campaigns.data.map(c => {
-      const pct = Math.min(100, Math.round(c.raised / c.goal * 100));
+  // ── OVERVIEW KPIs
+  document.getElementById('ov-kpis').innerHTML =
+    kpiCard('Total Raised', fmt(o.totalRaised), 'FY26 YTD') +
+    kpiCard('Active Donors', o.donorCount, 'with a gift') +
+    kpiCard('Calls Placed', o.callsPlaced, 'outbound') +
+    kpiCard('Pledge Conversion', o.pledgeConversionPct+'%', 'of answered calls');
+
+  // Monthly bar
+  mkChart('chart-monthly',{type:'bar',
+    data:{labels:monthly.data.map(m=>m.monthName),datasets:[{data:monthly.data.map(m=>m.revenue),backgroundColor:'#0F6E56',borderRadius:4,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:axBase,y:axY(v=>fmtK(v))}}
+  });
+
+  // Channel donut (overview)
+  const chLabels=channels.data.map(c=>c.label), chColors=channels.data.map(c=>c.color);
+  mkChart('chart-channels',{type:'doughnut',
+    data:{labels:chLabels,datasets:[{data:channels.data.map(c=>c.revenue),backgroundColor:chColors,borderWidth:0,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
+  });
+  document.getElementById('channel-legend').innerHTML = legendHtml(chLabels,chColors);
+
+  // Outcomes donut (overview)
+  const outLabels=outcomes.data.map(o=>o.outcome), outColors=outcomes.data.map(o=>OUTCOME_COLORS[o.outcome]||'#888');
+  mkChart('chart-outcomes',{type:'doughnut',
+    data:{labels:outLabels,datasets:[{data:outcomes.data.map(o=>o.count),backgroundColor:outColors,borderWidth:0,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
+  });
+  document.getElementById('outcome-legend').innerHTML = legendHtml(outLabels,outColors);
+
+  // Caller bars (overview — top 7)
+  document.getElementById('caller-bars').innerHTML =
+    barRows(leaderboard.data.slice(0,7),'name','totalPledged',()=>'#185FA5');
+
+  // Campaign bars
+  document.getElementById('campaign-bars').innerHTML =
+    campaigns.data.map(c=>{
+      const pct=Math.min(100,Math.round(+c.raised/+c.goal*100));
       return `<div class="bar-row">
         <div class="bar-label" title="${c.label}">${c.label}</div>
         <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${c.color}"></div></div>
-        <div class="bar-val" style="color:var(--muted);font-size:11px">${pct}%&nbsp;<span style="color:var(--text)">${fmtK(c.raised)}</span></div>
+        <div class="bar-val"><span style="color:var(--text-2)">${pct}%</span> &nbsp;${fmtK(c.raised)}</div>
       </div>`;
     }).join('');
 
-    // Segments overview table
-    document.getElementById('segments-ov').innerHTML = `
-      <table><thead><tr><th>Segment</th><th>Donors</th><th>Total Raised</th><th>Avg Gift</th></tr></thead><tbody>
-      ${segments.data.map(s => `<tr>
-        <td><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${s.color};margin-right:6px;vertical-align:middle"></span>${s.label}</td>
-        <td class="muted">${s.donors}</td>
-        <td class="right">${fmt(s.totalRaised)}</td>
-        <td class="right">${fmt(s.avgGift)}</td>
-      </tr>`).join('')}
-      </tbody></table>`;
+  // ── DONATIONS KPIs
+  document.getElementById('don-kpis').innerHTML =
+    kpiCard('Total Raised', fmt(ds.totalRaised), 'completed gifts') +
+    kpiCard('Total Gifts', ds.totalGifts.toLocaleString(), 'transactions') +
+    kpiCard('Unique Donors', ds.uniqueDonors, 'gave at least once') +
+    kpiCard('Avg Gift', fmt(ds.avgGiftSize), 'per transaction');
 
-    // ── DONATIONS ──
-    const ds = donSum.data;
-    document.getElementById('don-raised').textContent  = fmt(ds.totalRaised);
-    document.getElementById('don-gifts').textContent   = ds.totalGifts.toLocaleString();
-    document.getElementById('don-donors').textContent  = ds.uniqueDonors;
-    document.getElementById('don-avg').textContent     = fmt(ds.avgGiftSize);
+  mkChart('chart-campaigns',{type:'bar',
+    data:{labels:campaigns.data.map(c=>c.label),datasets:[{data:campaigns.data.map(c=>c.raised),backgroundColor:campaigns.data.map(c=>c.color),borderRadius:4,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{...axBase,ticks:{...tickStyle,maxRotation:30}},y:axY(v=>fmtK(v))}}
+  });
+  mkChart('chart-channels-don',{type:'doughnut',
+    data:{labels:chLabels,datasets:[{data:channels.data.map(c=>c.gifts),backgroundColor:chColors,borderWidth:0,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#888780',font:{size:11},padding:10,boxWidth:12}}}}
+  });
 
-    makeChart('chart-campaigns', {
-      type: 'bar',
-      data: {
-        labels: campaigns.data.map(c => c.label),
-        datasets: [{ data: campaigns.data.map(c => c.raised), backgroundColor: campaigns.data.map(c => c.color), borderRadius: 4, borderSkipped: false }]
-      },
-      options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ x:{...DARK, ticks:{...DARK.ticks, maxRotation:30}}, y:{...DARK, ticks:{...DARK.ticks, callback:v=>fmtK(v)}} } }
-    });
+  document.getElementById('don-count').textContent = donList.data.length + ' most recent';
+  document.getElementById('don-table').innerHTML = `<table>
+    <thead><tr><th>Date</th><th>Donor</th><th>Campaign</th><th>Channel</th><th class="right">Amount</th><th>Status</th></tr></thead>
+    <tbody>${donList.data.map(d=>`<tr>
+      <td class="muted">${d.giftDate}</td><td>${d.donorName}</td>
+      <td class="muted">${d.campaign}</td><td class="muted">${d.channel}</td>
+      <td class="right">${fmt(d.amount)}</td><td>${statusBadge(d.status)}</td>
+    </tr>`).join('')}</tbody></table>`;
 
-    makeChart('chart-channels-don', {
-      type: 'doughnut',
-      data: {
-        labels: channels.data.map(c => c.label),
-        datasets: [{ data: channels.data.map(c => c.gifts), backgroundColor: channels.data.map(c => c.color), borderWidth: 0, hoverOffset: 6 }]
-      },
-      options: { responsive:true, plugins:{ legend:{ position:'bottom', labels:{ color:'#8b8fa8', font:{size:11}, padding:10, boxWidth:12 } } } }
-    });
+  // ── CALLS KPIs
+  document.getElementById('call-kpis').innerHTML =
+    kpiCard('Calls Placed', cs.callsPlaced, 'outbound total') +
+    kpiCard('Connect Rate', cs.connectRatePct+'%', 'answered') +
+    kpiCard('Pledge Conversion', cs.pledgeConvPct+'%', 'of answered calls') +
+    kpiCard('Avg Duration', fmtDur(cs.avgDurationSec), 'connected calls', 'delta-warn');
 
-    const statusBadge = s => s === 'completed' ? '<span class="badge bg">completed</span>' : s === 'pending' ? '<span class="badge ba">pending</span>' : '<span class="badge br">failed</span>';
-    document.getElementById('don-table').innerHTML = `
-      <div class="tbl-wrap"><table><thead><tr>
-        <th>Date</th><th>Donor</th><th>Campaign</th><th>Channel</th><th>Amount</th><th>Status</th>
-      </tr></thead><tbody>
-      ${donList.data.map(d => `<tr>
-        <td class="muted">${d.giftDate}</td>
-        <td>${d.donorName}</td>
-        <td class="muted">${d.campaign}</td>
-        <td class="muted">${d.channel}</td>
-        <td class="right">${fmt(d.amount)}</td>
-        <td>${statusBadge(d.status)}</td>
-      </tr>`).join('')}
-      </tbody></table></div>`;
+  document.getElementById('caller-bars-full').innerHTML =
+    barRows(leaderboard.data,'name','totalPledged',()=>'#185FA5');
 
-    // ── CALLS ──
-    const cs = callSum.data;
-    document.getElementById('call-placed').textContent  = cs.callsPlaced;
-    document.getElementById('call-connect').textContent = cs.connectRatePct + '%';
-    document.getElementById('call-conv').textContent    = cs.pledgeConvPct + '%';
-    document.getElementById('call-dur').textContent     = fmtDur(cs.avgDurationSec);
+  mkChart('chart-outcomes-calls',{type:'doughnut',
+    data:{labels:outLabels,datasets:[{data:outcomes.data.map(o=>o.count),backgroundColor:outColors,borderWidth:0,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#888780',font:{size:11},padding:10,boxWidth:12}}}}
+  });
 
-    const outcomeColors = { answered:'#1D9E75', voicemail:'#7F77DD', missed:'#D85A30' };
-    makeChart('chart-outcomes', {
-      type: 'doughnut',
-      data: {
-        labels: outcomes.data.map(o => o.outcome),
-        datasets: [{ data: outcomes.data.map(o => o.count), backgroundColor: outcomes.data.map(o => outcomeColors[o.outcome] || '#888780'), borderWidth: 0, hoverOffset: 6 }]
-      },
-      options: { responsive:true, plugins:{ legend:{ position:'bottom', labels:{ color:'#8b8fa8', font:{size:11}, padding:10, boxWidth:12 } } } }
-    });
+  document.getElementById('call-count').textContent = callList.data.length + ' most recent';
+  document.getElementById('calls-table').innerHTML = `<table>
+    <thead><tr><th>Time</th><th>Caller</th><th>Contact</th><th>Duration</th><th>Outcome</th><th class="right">Pledge</th></tr></thead>
+    <tbody>${callList.data.map(c=>`<tr>
+      <td class="muted">${c.callTime}</td><td>${c.callerName}</td><td>${c.contact}</td>
+      <td class="muted">${c.durationLabel}</td><td>${statusBadge(c.outcome)}</td>
+      <td class="right">${+c.pledge>0?fmt(c.pledge):'<span style="color:var(--text-3)">—</span>'}</td>
+    </tr>`).join('')}</tbody></table>`;
 
-    const maxPledged = Math.max(...leaderboard.data.map(c => c.totalPledged), 1);
-    document.getElementById('caller-bars').innerHTML = leaderboard.data.slice(0,10).map(c => `
-      <div class="bar-row">
-        <div class="bar-label" title="${c.name}">${c.name}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(c.totalPledged/maxPledged*100)}%;background:#185FA5"></div></div>
-        <div class="bar-val">${fmtK(c.totalPledged)}</div>
-      </div>`).join('');
+  // ── DONORS
+  const lcLabels=lifecycle.data.map(l=>l.lifecycle), lcColors=lifecycle.data.map(l=>LC_COLORS[l.lifecycle]||'#888');
+  mkChart('chart-lifecycle',{type:'doughnut',
+    data:{labels:lcLabels,datasets:[{data:lifecycle.data.map(l=>l.count),backgroundColor:lcColors,borderWidth:0,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#888780',font:{size:11},padding:10,boxWidth:12}}}}
+  });
 
-    const outBadge = o => o === 'answered' ? '<span class="badge bg">answered</span>' : o === 'voicemail' ? '<span class="badge bp">voicemail</span>' : '<span class="badge br">missed</span>';
-    document.getElementById('calls-table').innerHTML = `
-      <div class="tbl-wrap"><table><thead><tr>
-        <th>Time</th><th>Caller</th><th>Contact</th><th>Duration</th><th>Outcome</th><th>Pledge</th>
-      </tr></thead><tbody>
-      ${callList.data.map(c => `<tr>
-        <td class="muted">${c.callTime}</td>
-        <td>${c.callerName}</td>
-        <td>${c.contact}</td>
-        <td class="muted">${c.durationLabel}</td>
-        <td>${outBadge(c.outcome)}</td>
-        <td class="right">${c.pledge > 0 ? fmt(c.pledge) : '<span style="color:var(--muted)">—</span>'}</td>
-      </tr>`).join('')}
-      </tbody></table></div>`;
+  const maxSeg=Math.max(...segments.data.map(s=>+s.totalRaised),1);
+  document.getElementById('seg-bars').innerHTML =
+    segments.data.map(s=>`<div class="bar-row">
+      <div class="bar-label">${s.label}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(+s.totalRaised/maxSeg*100)}%;background:${s.color}"></div></div>
+      <div class="bar-val">${fmtK(s.totalRaised)}</div>
+    </div>`).join('');
 
-    // ── DONORS ──
-    const lcColors = { active:'#1D9E75', new:'#185FA5', reactivated:'#7F77DD', lapsed:'#D85A30' };
-    makeChart('chart-lifecycle', {
-      type: 'doughnut',
-      data: {
-        labels: lifecycle.data.map(l => l.lifecycle),
-        datasets: [{ data: lifecycle.data.map(l => l.count), backgroundColor: lifecycle.data.map(l => lcColors[l.lifecycle] || '#888780'), borderWidth: 0, hoverOffset: 6 }]
-      },
-      options: { responsive:true, plugins:{ legend:{ position:'bottom', labels:{ color:'#8b8fa8', font:{size:11}, padding:10, boxWidth:12 } } } }
-    });
+  document.getElementById('roster-count').textContent = roster.data.length + ' active donors';
+  document.getElementById('roster-table').innerHTML = `<table>
+    <thead><tr><th>Donor</th><th>Segment</th><th>First Gift</th><th>Status</th><th>Gifts</th><th class="right">Total</th><th class="right">Avg</th></tr></thead>
+    <tbody>${roster.data.map(r=>`<tr>
+      <td>${r.name}</td><td class="muted">${r.segmentLabel}</td><td class="muted">${r.firstGift}</td>
+      <td>${statusBadge(r.lifecycle)}</td><td class="muted">${r.gifts}</td>
+      <td class="right">${fmt(r.total)}</td><td class="right">${fmt(r.avgGift)}</td>
+    </tr>`).join('')}</tbody></table>`;
 
-    document.getElementById('seg-table').innerHTML = `
-      <table><thead><tr><th>Segment</th><th>Donors</th><th>Total Raised</th><th>Avg Gift</th></tr></thead><tbody>
-      ${segments.data.map(s => `<tr>
-        <td><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${s.color};margin-right:6px;vertical-align:middle"></span>${s.label}</td>
-        <td class="muted">${s.donors}</td>
-        <td class="right">${fmt(s.totalRaised)}</td>
-        <td class="right">${fmt(s.avgGift)}</td>
-      </tr>`).join('')}
-      </tbody></table>`;
-
-    const lcBadge = l => {
-      const cls = {active:'bg',new:'bb',reactivated:'bp',lapsed:'br'}[l] || 'ba';
-      return `<span class="badge ${cls}">${l}</span>`;
-    };
-    document.getElementById('roster-table').innerHTML = `
-      <div class="tbl-wrap"><table><thead><tr>
-        <th>Donor</th><th>Segment</th><th>First Gift</th><th>Status</th><th>Gifts</th><th>Total</th><th>Avg</th>
-      </tr></thead><tbody>
-      ${roster.data.map(r => `<tr>
-        <td>${r.name}</td>
-        <td class="muted">${r.segmentLabel}</td>
-        <td class="muted">${r.firstGift}</td>
-        <td>${lcBadge(r.lifecycle)}</td>
-        <td class="muted">${r.gifts}</td>
-        <td class="right">${fmt(r.total)}</td>
-        <td class="right">${fmt(r.avgGift)}</td>
-      </tr>`).join('')}
-      </tbody></table></div>`;
-
-    document.getElementById('atrisk-table').innerHTML = `
-      <div class="tbl-wrap"><table><thead><tr>
-        <th>Donor</th><th>Segment</th><th>First Gift</th><th>Gifts</th><th>Lifetime Value</th>
-      </tr></thead><tbody>
-      ${atRisk.data.map(r => `<tr>
-        <td>${r.name}</td>
-        <td class="muted">${r.segmentLabel}</td>
-        <td class="muted">${r.firstGift}</td>
-        <td class="muted">${r.giftCount}</td>
-        <td class="right">${fmt(r.lifetimeValue)}</td>
-      </tr>`).join('')}
-      </tbody></table></div>`;
-
-  } catch(e) {
-    document.getElementById('status-text').textContent = 'Connection error';
-    console.error(e);
-  }
+  document.getElementById('atrisk-table').innerHTML = `<table>
+    <thead><tr><th>Donor</th><th>Segment</th><th>First Gift</th><th>Gifts</th><th class="right">Lifetime Value</th></tr></thead>
+    <tbody>${atRisk.data.map(r=>`<tr>
+      <td>${r.name}</td><td class="muted">${r.segmentLabel}</td><td class="muted">${r.firstGift}</td>
+      <td class="muted">${r.giftCount}</td><td class="right">${fmt(r.lifetimeValue)}</td>
+    </tr>`).join('')}</tbody></table>`;
 }
 
-go();
+loadAll().catch(err=>{
+  console.error(err);
+  document.getElementById('lastRefresh').textContent='Connection error';
+});
 </script>
 </body>
 </html>
