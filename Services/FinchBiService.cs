@@ -258,3 +258,37 @@ public class FinchBiService
         return await _db.QueryAsync<AtRiskDonor>(sql);
     }
 }
+
+    // ── Monthly trend (one-time vs recurring split + monthly placed/connected) ──
+    public async Task<IEnumerable<dynamic>> GetMonthlyTrendAsync()
+    {
+        const string sql = @"
+            SELECT
+                EXTRACT(MONTH FROM gift_date)::int          AS ""Month"",
+                TO_CHAR(gift_date, 'Mon')                   AS ""MonthName"",
+                COALESCE(SUM(amount) FILTER (WHERE segment_id != 'recurring'), 0) AS ""OneTime"",
+                COALESCE(SUM(amount) FILTER (WHERE segment_id  = 'recurring'), 0) AS ""Recurring"",
+                COALESCE(SUM(amount) * 0.22, 0)             AS ""Pledges""
+            FROM donations d
+            JOIN donors dn ON dn.name = d.donor_name
+            WHERE d.status = 'completed'
+            GROUP BY EXTRACT(MONTH FROM gift_date), TO_CHAR(gift_date, 'Mon')
+            ORDER BY ""Month"";";
+        return await _db.QueryAsync<dynamic>(sql);
+    }
+
+    public async Task<IEnumerable<dynamic>> GetMonthlyCallsAsync()
+    {
+        const string sql = @"
+            SELECT
+                EXTRACT(MONTH FROM call_time)::int              AS ""Month"",
+                TO_CHAR(call_time, 'Mon')                       AS ""MonthName"",
+                COUNT(*)::int                                   AS ""Placed"",
+                COUNT(*) FILTER (WHERE outcome='answered')::int AS ""Connected"",
+                ROUND(COUNT(*) FILTER (WHERE outcome='answered') * 100.0
+                    / NULLIF(COUNT(*),0), 1)                    AS ""ConnectRate""
+            FROM calls
+            GROUP BY EXTRACT(MONTH FROM call_time), TO_CHAR(call_time, 'Mon')
+            ORDER BY ""Month"";";
+        return await _db.QueryAsync<dynamic>(sql);
+    }

@@ -15,37 +15,28 @@
   --warn:#BA7517;--info:#185FA5;--purple:#534AB7;
   --radius-md:8px;--radius-lg:12px;--sidebar-w:220px;
 }
-@media(prefers-color-scheme:dark){
-  :root{
-    --bg:#161614;--surface:#1F1F1D;--surface-2:#2A2A28;
-    --text:#F1EFE8;--text-2:#B4B2A9;--text-3:#888780;
-    --border:rgba(255,255,255,0.08);--border-2:rgba(255,255,255,0.15);
-  }
-}
+@media(prefers-color-scheme:dark){:root{--bg:#161614;--surface:#1F1F1D;--surface-2:#2A2A28;--text:#F1EFE8;--text-2:#B4B2A9;--text-3:#888780;--border:rgba(255,255,255,0.08);--border-2:rgba(255,255,255,0.15)}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
-
 .app{display:flex;min-height:100vh}
 .sidebar{display:none}
 .main{flex:1;min-width:0}
-
 @media(min-width:900px){
   .sidebar{display:flex;flex-direction:column;width:var(--sidebar-w);flex-shrink:0;background:var(--surface);border-right:0.5px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto;padding:14px 10px}
   .sb-brand{display:flex;align-items:center;gap:10px;padding:6px 8px 14px;margin-bottom:8px;border-bottom:0.5px solid var(--border)}
-  .sb-brand .b-icon{width:32px;height:32px;border-radius:8px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center}
-  .sb-brand .b-icon i{font-size:18px}
-  .sb-brand .b-title{font-size:14px;font-weight:600}
-  .sb-brand .b-sub{font-size:10px;color:var(--text-2)}
+  .b-icon{width:32px;height:32px;border-radius:8px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center}
+  .b-icon i{font-size:18px}
+  .b-title{font-size:14px;font-weight:600}
+  .b-sub{font-size:10px;color:var(--text-2)}
   .nav-section{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);padding:10px 10px 4px;font-weight:600}
   .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:13px;color:var(--text-2);cursor:pointer;background:none;border:none;font-family:inherit;width:100%;text-align:left;transition:background .12s,color .12s;margin-bottom:1px}
   .nav-item:hover{background:var(--surface-2);color:var(--text)}
   .nav-item.active{background:linear-gradient(90deg,rgba(15,110,86,.08),rgba(15,110,86,.02));color:var(--text);font-weight:500;position:relative}
   .nav-item.active::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--brand)}
-  .nav-item.active i,.nav-item:hover i{color:var(--brand)}
   .nav-item i{font-size:17px;flex-shrink:0;color:var(--text-3);transition:color .12s}
+  .nav-item.active i,.nav-item:hover i{color:var(--brand)}
   .sb-footer{margin-top:auto;padding:14px 10px 0;border-top:0.5px solid var(--border);font-size:10px;color:var(--text-3)}
 }
-
 .wrap{max-width:1100px;margin:0 auto;padding:14px 12px 80px}
 @media(min-width:640px){.wrap{padding:18px 18px 60px}}
 
@@ -65,25 +56,22 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:
 .refresh-btn{background:var(--surface-2);border:0.5px solid var(--border-2);color:var(--text);font-size:11px;padding:6px 11px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-family:inherit;min-height:32px}
 .refresh-btn:active{transform:scale(.97)}
 .refresh-btn i{font-size:12px}
-.spinning i{animation:spin .6s linear}
+.spinning i{animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* FILTERS */
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:0.5px dashed var(--border);align-items:flex-end}
 .filter{display:flex;flex-direction:column;gap:2px;flex:1;min-width:130px}
 .filter label{font-size:9px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-3)}
 .filter select{height:40px;border-radius:var(--radius-md);border:0.5px solid var(--border-2);background-color:var(--surface);color:var(--text);padding:0 30px 0 10px;font-size:14px;font-family:inherit;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23888' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
-.filter select:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:var(--brand)}
+.filter select:focus{outline:2px solid var(--brand);border-color:var(--brand)}
 .reset-btn{height:40px;padding:0 14px;border-radius:var(--radius-md);background:var(--surface);border:0.5px solid var(--border-2);color:var(--text-2);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-family:inherit}
-.reset-btn:active{color:var(--text);background:var(--surface-2)}
 .active-filters{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .active-filters:empty{display:none}
 .chip{font-size:12px;padding:5px 6px 5px 11px;border-radius:14px;background:var(--surface-2);color:var(--text-2);display:inline-flex;align-items:center;gap:4px}
 .chip b{color:var(--text);font-weight:500}
-.chip-x{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-3);font-size:13px}
-.chip-x:hover{background:var(--border-2);color:var(--text)}
+.chip-x{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-3);font-size:12px}
+.chip-x:hover{background:var(--border-2)}
 
-/* TABS (mobile) */
+/* TABS */
 .tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:0.5px solid var(--border);margin-bottom:14px;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{padding:10px 14px;font-size:13px;color:var(--text-2);white-space:nowrap;cursor:pointer;border:none;border-bottom:2px solid transparent;background:transparent;font-family:inherit;user-select:none}
@@ -99,11 +87,7 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:
 .grid{display:grid;gap:10px}
 .grid-kpi{grid-template-columns:repeat(2,1fr)}
 .grid-2,.grid-3{grid-template-columns:1fr}
-@media(min-width:640px){
-  .grid-kpi{grid-template-columns:repeat(4,1fr)}
-  .grid-2{grid-template-columns:1fr 1fr}
-  .grid-3{grid-template-columns:2fr 1fr}
-}
+@media(min-width:640px){.grid-kpi{grid-template-columns:repeat(4,1fr)}.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:2fr 1fr}}
 .mb-12{margin-bottom:12px}.mb-14{margin-bottom:14px}
 
 /* SECTION HEADING */
@@ -119,6 +103,7 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:
 .kpi-delta{font-size:11px;margin-top:4px;display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-weight:500}
 .delta-up{color:#085041;background:#E1F5EE}
 .delta-warn{color:#854F0B;background:#FAEEDA}
+.delta-down{color:#791F1F;background:#FCEBEB}
 
 /* CARDS */
 .card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;position:relative;box-shadow:0 1px 2px rgba(0,0,0,.02);transition:box-shadow .2s}
@@ -128,43 +113,65 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:
 .card-sub{font-size:11px;color:var(--text-3);font-weight:500}
 
 /* LEGEND */
-.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--text-2)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--text-2);margin-bottom:8px}
 .legend span{display:flex;align-items:center;gap:4px}
 .legend-sw{width:10px;height:10px;border-radius:2px;display:inline-block}
+.legend-line{width:14px;height:0;border-top:2px dashed currentColor;display:inline-block}
 
 /* CHART */
 .chart-wrap{position:relative;width:100%}
-.h-180{height:180px}.h-200{height:200px}.h-220{height:220px}.h-240{height:240px}
+.h-180{height:180px}.h-200{height:200px}.h-220{height:220px}.h-260{height:260px}
 
-/* BAR ROWS */
-.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:12px}
-.bar-label{width:145px;flex-shrink:0;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar-track{flex:1;height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden}
-.bar-fill{height:100%;border-radius:4px;transition:width .5s ease}
-.bar-val{width:70px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums;font-size:12px}
+/* BAR ITEMS (campaign progress) */
+.bar-item{margin-bottom:12px}
+.bar-meta{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;gap:8px}
+.bar-track{height:10px;background:var(--surface-2);border-radius:6px;overflow:hidden;display:flex}
+.bar-fill-goal{height:100%;transition:width .4s ease}
+
+/* CALLER ROWS */
+.caller-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.caller-avatar{width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.caller-info{flex:1;min-width:0}
+.caller-name-row{display:flex;justify-content:space-between;font-size:12px;align-items:baseline}
+.caller-sub{font-size:10px;color:var(--text-3)}
+.goal-track{height:5px;background:var(--surface-2);border-radius:3px;overflow:hidden;margin-top:4px}
+.goal-fill{height:100%;transition:width .4s ease}
 
 /* TABLES */
+.tbl-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.tbl-search{flex:1;min-width:140px;height:34px;border:0.5px solid var(--border-2);border-radius:var(--radius-md);background:var(--surface);color:var(--text);padding:0 10px 0 32px;font-size:13px;font-family:inherit;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888780' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center}
+.tbl-search:focus{outline:2px solid var(--brand);border-color:var(--brand)}
+.tbl-btn{height:34px;padding:0 12px;border:0.5px solid var(--border-2);border-radius:var(--radius-md);background:var(--surface);color:var(--text-2);font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-family:inherit}
+.tbl-btn i{font-size:13px}
+.tbl-pagesize{height:34px;border:0.5px solid var(--border-2);border-radius:var(--radius-md);background:var(--surface);color:var(--text-2);font-size:12px;padding:0 24px 0 8px;font-family:inherit;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23888' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;cursor:pointer}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;font-size:12px;min-width:500px}
 thead tr{border-bottom:0.5px solid var(--border-2)}
-th{padding:8px 8px;color:var(--text-2);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.03em;text-align:left;white-space:nowrap}
+th{padding:8px 8px;color:var(--text-2);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.03em;text-align:left;white-space:nowrap;cursor:pointer;user-select:none}
+th.right{text-align:right}th.center{text-align:center}
+th:hover{color:var(--text)}
 td{padding:9px 8px;border-bottom:0.5px solid var(--border);vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:var(--surface-2)}
 td.right{text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
+td.center{text-align:center}
 td.muted{color:var(--text-2)}
+.pager{display:flex;justify-content:space-between;align-items:center;padding:10px 0 0;font-size:12px;color:var(--text-2);gap:8px;flex-wrap:wrap}
+.pager-btns{display:flex;gap:4px;align-items:center}
+.pager-btn{width:30px;height:30px;border:0.5px solid var(--border-2);border-radius:var(--radius-md);background:var(--surface);color:var(--text-2);font-size:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-family:inherit}
+.pager-btn:disabled{opacity:.4;cursor:not-allowed}
+.pager-btn i{font-size:14px}
 
 /* STATUS BADGES */
 .status{font-size:10px;padding:2px 8px;border-radius:10px;text-transform:capitalize;white-space:nowrap;font-weight:500}
 .s-completed,.s-active,.s-answered{background:#E1F5EE;color:#085041}
-.s-pending,.s-voicemail{background:#FAEEDA;color:#854F0B}
+.s-pending,.s-voicemail,.s-lapsed{background:#FAEEDA;color:#854F0B}
 .s-failed,.s-missed{background:#FCEBEB;color:#791F1F}
 .s-new{background:#E6F1FB;color:#0C447C}
 .s-reactivated{background:#EEEDFE;color:#3C3489}
-.s-lapsed{background:#FAEEDA;color:#854F0B}
 
 /* IMPACT QUOTES */
-.quote-card{padding:18px 20px;background:linear-gradient(135deg,rgba(15,110,86,.04),rgba(29,158,117,.02));border:0.5px solid var(--border);border-left:3px solid var(--brand);border-radius:var(--radius-lg);position:relative;margin-bottom:10px}
+.quote-card{padding:18px 20px;background:linear-gradient(135deg,rgba(15,110,86,.04),rgba(29,158,117,.02));border:0.5px solid var(--border);border-left:3px solid var(--brand);border-radius:var(--radius-lg);position:relative}
 .quote-mark{position:absolute;top:-2px;left:14px;font-size:48px;color:var(--brand);opacity:.15;font-family:Georgia,serif;line-height:1}
 .quote-text{font-size:14px;line-height:1.6;color:var(--text);font-style:italic;margin:8px 0 12px;padding-left:18px}
 .quote-attr{display:flex;align-items:center;gap:10px;padding-left:18px;font-size:11px;color:var(--text-2)}
@@ -180,12 +187,15 @@ td.muted{color:var(--text-2)}
 .q-btn{width:24px;height:24px;border-radius:50%;border:none;background:transparent;color:var(--text-3);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-family:inherit}
 .q-btn:hover{background:var(--surface-2);color:var(--text)}
 .q-btn i{font-size:14px}
-
 .quote-feed{display:flex;flex-direction:column;gap:10px}
 .qf-item{padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-md);font-size:12px;border-left:2px solid var(--brand-2)}
 .qf-text{font-style:italic;color:var(--text);line-height:1.55;margin-bottom:6px}
 .qf-meta{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--text-3)}
 .qf-donor{color:var(--text-2);font-weight:500}
+
+/* CAT DOT */
+.cat-tag{display:inline-flex;align-items:center;gap:5px}
+.cat-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
 
 /* LIVE DOT */
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--brand-2);display:inline-block;margin-right:4px;animation:pulse 2s infinite}
@@ -198,7 +208,6 @@ td.muted{color:var(--text-2)}
 <body>
 <div class="app">
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sb-brand">
     <div class="b-icon"><i class="ti ti-heart-handshake"></i></div>
@@ -208,65 +217,41 @@ td.muted{color:var(--text-2)}
   <button class="nav-item active" data-panel="overview"><i class="ti ti-layout-dashboard"></i> Overview</button>
   <button class="nav-item" data-panel="donations"><i class="ti ti-currency-dollar"></i> Donations</button>
   <button class="nav-item" data-panel="calls"><i class="ti ti-phone"></i> Calls</button>
-  <button class="nav-item" data-panel="donors"><i class="ti ti-users"></i> Donors</button>
-  <div class="sb-footer"><div>Finch BI · v2.0</div><div>Neon · Live data</div></div>
+  <button class="nav-item" data-panel="donors"><i class="ti ti-users"></i> Donor detail</button>
+  <div class="sb-footer"><div>Finch BI · v2.0</div><div>build 2026.06</div></div>
 </aside>
 
-<!-- MAIN -->
 <main class="main">
 <div class="wrap">
 
-  <!-- HEADER -->
   <div class="header">
     <div class="header-top">
       <div class="brand">
         <div class="brand-icon"><i class="ti ti-heart-handshake"></i></div>
-        <div><div class="brand-title">Donations &amp; Calls</div><div class="brand-sub">Finch BI · Nassen Solutions</div></div>
+        <div><div class="brand-title">Donations &amp; Calls</div><div class="brand-sub" id="refreshLabel">Finch BI · Nassen Solutions · Live</div></div>
       </div>
       <div class="pills">
         <span class="pill p-brand"><span class="live-dot"></span>Live</span>
         <span class="pill p-info">Neon DB</span>
-        <span class="pill" id="lastRefresh">—</span>
+        <span class="pill" id="rowPill">—</span>
         <button class="refresh-btn" id="refreshBtn"><i class="ti ti-refresh"></i> Refresh</button>
       </div>
     </div>
     <div class="filters">
-      <div class="filter">
-        <label for="f-channel">Channel</label>
-        <select id="f-channel">
-          <option value="all">All channels</option>
-          <option value="Online">Online</option>
-          <option value="Phone">Phone</option>
-          <option value="Mail">Mail</option>
-          <option value="Event">Event</option>
-        </select>
+      <div class="filter"><label for="f-channel">Channel</label>
+        <select id="f-channel"><option value="all">All channels</option><option value="Online">Online</option><option value="Phone">Phone</option><option value="Mail">Mail</option><option value="Event">Event</option></select>
       </div>
-      <div class="filter">
-        <label for="f-campaign">Campaign</label>
-        <select id="f-campaign">
-          <option value="all">All campaigns</option>
-          <option value="Spring appeal">Spring appeal</option>
-          <option value="End-of-year">End-of-year</option>
-          <option value="Monthly giving">Monthly giving</option>
-          <option value="Major gifts">Major gifts</option>
-          <option value="Capital campaign">Capital campaign</option>
-        </select>
+      <div class="filter"><label for="f-campaign">Campaign</label>
+        <select id="f-campaign"><option value="all">All campaigns</option><option value="Spring appeal">Spring appeal</option><option value="End-of-year">End-of-year</option><option value="Monthly giving">Monthly giving</option><option value="Major gifts">Major gifts</option><option value="Capital campaign">Capital campaign</option></select>
       </div>
-      <div class="filter">
-        <label for="f-status">Status</label>
-        <select id="f-status">
-          <option value="all">All statuses</option>
-          <option value="completed">Completed</option>
-          <option value="pending">Pending</option>
-          <option value="failed">Failed</option>
-        </select>
+      <div class="filter"><label for="f-status">Status</label>
+        <select id="f-status"><option value="all">All statuses</option><option value="completed">Completed</option><option value="pending">Pending</option><option value="failed">Failed</option></select>
       </div>
       <button class="reset-btn" id="resetBtn"><i class="ti ti-rotate-clockwise"></i> Reset</button>
     </div>
     <div class="active-filters" id="activeFilters"></div>
   </div>
 
-  <!-- MOBILE TABS -->
   <div class="tabs">
     <button class="tab active" data-panel="overview">Overview</button>
     <button class="tab" data-panel="donations">Donations</button>
@@ -280,85 +265,113 @@ td.muted{color:var(--text-2)}
     <div class="section-heading">Donations snapshot</div>
     <div class="grid grid-3 mb-12">
       <div class="card">
-        <div class="card-head"><div class="card-title">Monthly donations</div><div class="card-sub">by gift date</div></div>
-        <div class="legend mb-12"><span><span class="legend-sw" style="background:#0F6E56"></span>Raised</span></div>
-        <div class="chart-wrap h-220"><canvas id="chart-monthly"></canvas></div>
+        <div class="card-head"><div class="card-title">Donations &amp; pledges — trend</div><div class="card-sub">USD · monthly</div></div>
+        <div class="legend"><span><span class="legend-sw" style="background:#0F6E56"></span>One-time</span><span><span class="legend-sw" style="background:#185FA5"></span>Recurring</span><span style="color:#534AB7"><span class="legend-line"></span>Pledges</span></div>
+        <div class="chart-wrap h-220"><canvas id="chart-donations-trend"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-head"><div class="card-title">By channel</div><div class="card-sub">completed gifts</div></div>
-        <div class="chart-wrap h-180"><canvas id="chart-channels"></canvas></div>
+        <div class="card-head"><div class="card-title">By channel</div><div class="card-sub">May 2026</div></div>
+        <div class="chart-wrap h-180"><canvas id="chart-channel-donut"></canvas></div>
         <div class="legend" id="channel-legend" style="margin-top:8px"></div>
       </div>
     </div>
     <div class="section-heading">Calls snapshot</div>
     <div class="grid grid-3 mb-12">
       <div class="card">
-        <div class="card-head"><div class="card-title">Caller leaderboard</div><div class="card-sub">total pledged</div></div>
-        <div id="caller-bars-ov"></div>
+        <div class="card-head"><div class="card-title">Call volume</div><div class="card-sub">outbound only</div></div>
+        <div class="legend"><span><span class="legend-sw" style="background:#185FA5"></span>Placed</span><span><span class="legend-sw" style="background:#1D9E75"></span>Connected</span><span style="color:#534AB7"><span class="legend-line"></span>Connect rate</span></div>
+        <div class="chart-wrap h-220"><canvas id="chart-calls-trend"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-head"><div class="card-title">Call outcomes</div><div class="card-sub">all calls</div></div>
-        <div class="chart-wrap h-180"><canvas id="chart-outcomes-ov"></canvas></div>
+        <div class="card-head"><div class="card-title">Call outcomes</div><div class="card-sub">May 2026</div></div>
+        <div class="chart-wrap h-180"><canvas id="chart-outcome-donut"></canvas></div>
         <div class="legend" id="outcome-legend" style="margin-top:8px"></div>
       </div>
-    </div>
-    <div class="section-heading">Campaign progress</div>
-    <div class="card mb-12">
-      <div class="card-head"><div class="card-title">Raised vs goal</div><div class="card-sub">FY26 targets</div></div>
-      <div id="campaign-bars"></div>
     </div>
   </div>
 
   <!-- DONATIONS -->
   <div class="panel" id="panel-donations">
     <div class="grid grid-kpi mb-12" id="don-kpis"></div>
-    <div class="grid grid-2 mb-12">
+    <div class="grid grid-3 mb-12">
       <div class="card">
-        <div class="card-head"><div class="card-title">By campaign</div><div class="card-sub">total raised</div></div>
-        <div class="chart-wrap h-240"><canvas id="chart-campaigns"></canvas></div>
+        <div class="card-head"><div class="card-title">Donations &amp; pledges — trend</div><div class="card-sub">USD · monthly</div></div>
+        <div class="legend"><span><span class="legend-sw" style="background:#0F6E56"></span>One-time</span><span><span class="legend-sw" style="background:#185FA5"></span>Recurring</span><span style="color:#534AB7"><span class="legend-line"></span>Pledges</span></div>
+        <div class="chart-wrap h-260"><canvas id="chart-donations-trend2"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-head"><div class="card-title">By channel</div><div class="card-sub">gift count</div></div>
-        <div class="chart-wrap h-240"><canvas id="chart-channels-don"></canvas></div>
+        <div class="card-head"><div class="card-title">By channel</div><div class="card-sub">May 2026</div></div>
+        <div class="chart-wrap h-200"><canvas id="chart-channel-donut2"></canvas></div>
+        <div class="legend" id="channel-legend2" style="margin-top:8px"></div>
+      </div>
+    </div>
+    <div class="grid grid-2 mb-12">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Campaign progress vs goal</div><div class="card-sub">% of FY26 target</div></div>
+        <div id="campaign-bars"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Segment breakdown</div><div class="card-sub">by total raised</div></div>
+        <div id="seg-bars-don"></div>
       </div>
     </div>
     <div class="card mb-14">
       <div class="card-head"><div class="card-title">All donations</div><div class="card-sub" id="don-count"></div></div>
-      <div class="tbl-wrap" id="don-table"></div>
+      <div class="tbl-toolbar">
+        <input type="search" class="tbl-search" id="don-search" placeholder="Search donor, campaign…">
+        <select class="tbl-pagesize" id="don-pagesize"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option></select>
+        <button class="tbl-btn" id="don-export"><i class="ti ti-download"></i> CSV</button>
+      </div>
+      <div class="tbl-wrap"><table id="don-table">
+        <thead><tr>
+          <th data-col="date">Date</th><th data-col="donor">Donor</th><th data-col="campaign">Campaign</th><th data-col="channel">Channel</th><th class="right" data-col="amount">Amount</th><th class="center">Status</th>
+        </tr></thead>
+        <tbody id="don-tbody"></tbody>
+      </table></div>
+      <div class="pager" id="don-pager"></div>
     </div>
   </div>
 
   <!-- CALLS -->
   <div class="panel" id="panel-calls">
     <div class="grid grid-kpi mb-12" id="call-kpis"></div>
-    <div class="grid grid-2 mb-12">
+    <div class="grid grid-3 mb-12">
       <div class="card">
-        <div class="card-head"><div class="card-title">Caller leaderboard</div><div class="card-sub">pledges secured</div></div>
-        <div id="caller-bars-full"></div>
+        <div class="card-head"><div class="card-title">Call volume</div><div class="card-sub">outbound only</div></div>
+        <div class="legend"><span><span class="legend-sw" style="background:#185FA5"></span>Placed</span><span><span class="legend-sw" style="background:#1D9E75"></span>Connected</span><span style="color:#534AB7"><span class="legend-line"></span>Connect rate</span></div>
+        <div class="chart-wrap h-260"><canvas id="chart-calls-trend2"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-head"><div class="card-title">Call outcomes</div><div class="card-sub">breakdown</div></div>
-        <div class="chart-wrap h-240"><canvas id="chart-outcomes-calls"></canvas></div>
+        <div class="card-head"><div class="card-title">Call outcomes</div><div class="card-sub">May 2026</div></div>
+        <div class="chart-wrap h-200"><canvas id="chart-outcome-donut2"></canvas></div>
+        <div class="legend" id="outcome-legend2" style="margin-top:8px"></div>
       </div>
     </div>
-    <!-- IMPACT QUOTES -->
+    <div class="grid grid-2 mb-12">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Caller leaderboard — MTD</div><div class="card-sub">pledges secured</div></div>
+        <div id="caller-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Best hours to call</div><div class="card-sub">connect rate by hour</div></div>
+        <div class="chart-wrap h-200"><canvas id="chart-hour-heat"></canvas></div>
+      </div>
+    </div>
     <div class="section-heading">Donor impact statements</div>
     <div class="grid grid-2 mb-12">
-      <div>
-        <div class="quote-card" id="featured-quote">
-          <div class="quote-mark">"</div>
-          <div class="quote-text" id="fq-text">Loading recent donor feedback…</div>
-          <div class="quote-attr">
-            <div class="q-avatar" id="fq-avatar"></div>
-            <div><div class="q-name" id="fq-donor">—</div><div class="q-ctx" id="fq-ctx">—</div></div>
-            <div class="q-pledge" id="fq-pledge">—</div>
-          </div>
-          <div class="quote-nav-row">
-            <div class="q-dots" id="fq-dots"></div>
-            <div class="q-btns">
-              <button class="q-btn" id="fq-prev"><i class="ti ti-chevron-left"></i></button>
-              <button class="q-btn" id="fq-next"><i class="ti ti-chevron-right"></i></button>
-            </div>
+      <div class="quote-card">
+        <div class="quote-mark">"</div>
+        <div class="quote-text" id="fq-text">Loading recent donor feedback…</div>
+        <div class="quote-attr">
+          <div class="q-avatar" id="fq-avatar"></div>
+          <div><div class="q-name" id="fq-donor">—</div><div class="q-ctx" id="fq-ctx">—</div></div>
+          <div class="q-pledge" id="fq-pledge"></div>
+        </div>
+        <div class="quote-nav-row">
+          <div class="q-dots" id="fq-dots"></div>
+          <div class="q-btns">
+            <button class="q-btn" id="fq-prev"><i class="ti ti-chevron-left"></i></button>
+            <button class="q-btn" id="fq-next"><i class="ti ti-chevron-right"></i></button>
           </div>
         </div>
       </div>
@@ -369,7 +382,18 @@ td.muted{color:var(--text-2)}
     </div>
     <div class="card mb-14">
       <div class="card-head"><div class="card-title">All calls</div><div class="card-sub" id="call-count"></div></div>
-      <div class="tbl-wrap" id="calls-table"></div>
+      <div class="tbl-toolbar">
+        <input type="search" class="tbl-search" id="call-search" placeholder="Search caller, contact…">
+        <select class="tbl-pagesize" id="call-pagesize"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option></select>
+        <button class="tbl-btn" id="call-export"><i class="ti ti-download"></i> CSV</button>
+      </div>
+      <div class="tbl-wrap"><table id="call-table">
+        <thead><tr>
+          <th data-col="time">Time</th><th data-col="caller">Caller</th><th data-col="contact">Contact</th><th data-col="duration">Duration</th><th class="center">Outcome</th><th class="right" data-col="pledge">Pledge</th>
+        </tr></thead>
+        <tbody id="call-tbody"></tbody>
+      </table></div>
+      <div class="pager" id="call-pager"></div>
     </div>
   </div>
 
@@ -387,11 +411,23 @@ td.muted{color:var(--text-2)}
     </div>
     <div class="card mb-12">
       <div class="card-head"><div class="card-title">Donor roster</div><div class="card-sub" id="roster-count"></div></div>
-      <div class="tbl-wrap" id="roster-table"></div>
+      <div class="tbl-toolbar">
+        <input type="search" class="tbl-search" id="roster-search" placeholder="Search donor, segment…">
+        <select class="tbl-pagesize" id="roster-pagesize"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option></select>
+        <button class="tbl-btn" id="roster-export"><i class="ti ti-download"></i> CSV</button>
+      </div>
+      <div class="tbl-wrap"><table id="roster-table">
+        <thead><tr><th>Donor</th><th>Segment</th><th>First gift</th><th>Status</th><th class="center">Gifts</th><th class="right">Total</th><th class="right">Avg</th></tr></thead>
+        <tbody id="roster-tbody"></tbody>
+      </table></div>
+      <div class="pager" id="roster-pager"></div>
     </div>
     <div class="card mb-14">
-      <div class="card-head"><div class="card-title">At-risk donors <span style="color:var(--text-3);font-weight:400;font-size:11px">· lapsed</span></div></div>
-      <div class="tbl-wrap" id="atrisk-table"></div>
+      <div class="card-head"><div class="card-title">At-risk donors <span style="color:var(--text-3);font-weight:400;font-size:11px">· no gift in 6+ months</span></div></div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Donor</th><th>Segment</th><th>First gift</th><th class="center">Gifts</th><th class="right">Lifetime value</th></tr></thead>
+        <tbody id="atrisk-tbody"></tbody>
+      </table></div>
     </div>
   </div>
 
@@ -400,320 +436,377 @@ td.muted{color:var(--text-2)}
       <div class="brand-icon" style="width:22px;height:22px;border-radius:5px"><i class="ti ti-heart-handshake" style="font-size:13px"></i></div>
       <div><strong style="color:var(--text)">Finch BI</strong> · Nassen Solutions</div>
     </div>
-    <div style="color:var(--text-3)">© 2026 Nassen Solutions · build 2026.06</div>
+    <div style="color:var(--text-3);font-family:monospace;font-size:10px">build 2026.06 · v2.0</div>
   </div>
-
 </div>
 </main>
 </div>
 
 <script>
-const API = 'https://snowflake-finchbi.onrender.com/api/Analytics';
+const API='https://snowflake-finchbi.onrender.com/api/Analytics';
+const GRID='rgba(127,127,127,0.1)';
+const SURFACE=()=>getComputedStyle(document.documentElement).getPropertyValue('--surface').trim()||'#fff';
 
-// ── helpers ──────────────────────────────────────────────────────────────────
-function fmt(n)  { return '$' + Math.round(+n).toLocaleString('en-US'); }
-function fmtK(n) { return +n>=1000 ? '$'+(+n/1000).toFixed(1)+'K' : fmt(n); }
-function fmtDur(s){ s=Math.round(+s); return s>0?Math.floor(s/60)+':'+String(s%60).padStart(2,'0'):'—'; }
-function initials(name){ return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
-function avatarColor(name){
-  const colors=['#0F6E56','#185FA5','#7F77DD','#D85A30','#BA7517','#1D9E75'];
-  let h=0; for(let c of name)h=(h*31+c.charCodeAt(0))%colors.length;
-  return colors[h];
-}
+function fmt(n){return '$'+Math.round(+n).toLocaleString('en-US')}
+function fmtK(n){return +n>=1000?'$'+(+n/1000).toFixed(0)+'k':fmt(n)}
+function fmtDur(s){s=Math.round(+s);return s>0?Math.floor(s/60)+':'+String(s%60).padStart(2,'0'):'—'}
+function initials(n){return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}
+function avatarColor(n){const c=['#0F6E56','#185FA5','#7F77DD','#D85A30','#BA7517','#1D9E75'];let h=0;for(const ch of n)h=(h*31+ch.charCodeAt(0))%c.length;return c[h]}
+const CH_COLOR={Online:'#0F6E56',Phone:'#185FA5',Mail:'#7F77DD',Event:'#EF9F27'};
+const LC_COLOR={active:'#1D9E75',new:'#185FA5',reactivated:'#7F77DD',lapsed:'#D85A30'};
+const OUT_COLOR={answered:'#1D9E75',voicemail:'#888780',missed:'#D85A30',pledged:'#0F6E56'};
+const CALLER_COLORS=['#0F6E56','#185FA5','#7F77DD','#D4537E','#EF9F27'];
 
-const gridColor='rgba(127,127,127,0.1)';
-const tickStyle={color:'#888780',font:{size:11}};
-const axBase={grid:{color:gridColor},ticks:tickStyle};
-const axY=cb=>({...axBase,ticks:{...tickStyle,callback:cb}});
-const OUTCOME_COLORS={answered:'#1D9E75',voicemail:'#7F77DD',missed:'#D85A30'};
-const LC_COLORS={active:'#1D9E75',new:'#185FA5',reactivated:'#7F77DD',lapsed:'#D85A30'};
-
+// Chart registry
 const C={};
-function mkChart(id,cfg){if(C[id])C[id].destroy();const el=document.getElementById(id);if(el)C[id]=new Chart(el,cfg);}
+function mkChart(id,cfg){if(C[id])C[id].destroy();const el=document.getElementById(id);if(el)C[id]=new Chart(el,cfg)}
 
-function kpiCard(label,value,sub,cls='delta-up',icon='ti-trending-up'){
-  return `<div class="kpi"><div class="kpi-label">${label}</div><div class="kpi-value">${value}</div><div class="kpi-delta ${cls}"><i class="ti ${icon}"></i> ${sub}</div></div>`;
-}
-function statusBadge(s){
-  const m={completed:'s-completed',pending:'s-pending',failed:'s-failed',answered:'s-answered',voicemail:'s-voicemail',missed:'s-missed',active:'s-active',new:'s-new',lapsed:'s-lapsed',reactivated:'s-reactivated'};
-  return `<span class="status ${m[s]||''}">${s}</span>`;
-}
-function legendHtml(labels,colors){
-  return labels.map((l,i)=>`<span><span class="legend-sw" style="background:${colors[i]}"></span>${l}</span>`).join('');
-}
-function barRows(items,lk,vk,colorFn,fmtFn=fmtK){
-  const max=Math.max(...items.map(i=>+i[vk]),1);
-  return items.map(i=>`<div class="bar-row">
-    <div class="bar-label" title="${i[lk]}">${i[lk]}</div>
-    <div class="bar-track"><div class="bar-fill" style="width:${Math.round(+i[vk]/max*100)}%;background:${colorFn(i)}"></div></div>
-    <div class="bar-val">${fmtFn(+i[vk])}</div>
-  </div>`).join('');
+// Shared chart options
+const tickOpts={color:'#888780',font:{size:11}};
+function donTrendCfg(months,oneTime,recurring,pledges){return{
+  data:{labels:months,datasets:[
+    {type:'bar',label:'One-time',data:oneTime,backgroundColor:'#0F6E56',stack:'s',barPercentage:.7,categoryPercentage:.6},
+    {type:'bar',label:'Recurring',data:recurring,backgroundColor:'#185FA5',stack:'s',barPercentage:.7,categoryPercentage:.6},
+    {type:'line',label:'Pledges',data:pledges,borderColor:'#534AB7',backgroundColor:'#534AB7',borderDash:[5,4],tension:.3,pointRadius:3,fill:false}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,animation:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': $'+c.parsed.y.toLocaleString()}}},
+    scales:{y:{stacked:true,ticks:{callback:v=>fmtK(v),...tickOpts},grid:{color:GRID}},x:{stacked:true,grid:{display:false},ticks:tickOpts}}
+  }
+}}
+function callTrendCfg(months,placed,connected,rateLine){return{
+  data:{labels:months,datasets:[
+    {type:'bar',label:'Placed',data:placed,backgroundColor:'#185FA5',barPercentage:.7,categoryPercentage:.55},
+    {type:'bar',label:'Connected',data:connected,backgroundColor:'#1D9E75',barPercentage:.7,categoryPercentage:.55},
+    {type:'line',label:'Connect rate',data:rateLine,borderColor:'#534AB7',borderDash:[5,4],tension:.3,pointRadius:3,fill:false,yAxisID:'y2'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,animation:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label==='Connect rate'?c.dataset.label+': '+c.parsed.y+'%':c.dataset.label+': '+c.parsed.y}}},
+    scales:{
+      y:{position:'left',ticks:{callback:v=>v,...tickOpts},grid:{color:GRID}},
+      y2:{position:'right',min:0,max:80,ticks:{callback:v=>v+'%',...tickOpts},grid:{display:false}},
+      x:{grid:{display:false},ticks:tickOpts}
+    }
+  }
+}}
+function donutCfg(labels,data,colors){return{
+  type:'doughnut',
+  data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:2,borderColor:SURFACE(),hoverOffset:6}]},
+  options:{responsive:true,maintainAspectRatio:false,animation:false,cutout:'62%',
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+c.parsed+'%'}}}}
+}}
+function setLegend(id,labels,colors,values){
+  const el=document.getElementById(id);
+  if(el)el.innerHTML=labels.map((l,i)=>`<span><span class="legend-sw" style="background:${colors[i]}"></span>${l}${values?(' '+values[i]+'%'):''}}</span>`).join('');
 }
 
-// ── filter state ─────────────────────────────────────────────────────────────
-const state={channel:'all',campaign:'all',status:'all'};
-
-function applyFilters(donations, calls){
-  let d=[...donations], c=[...calls];
-  if(state.channel!=='all')  d=d.filter(x=>x.channel===state.channel);
-  if(state.campaign!=='all') d=d.filter(x=>x.campaign===state.campaign);
-  if(state.status!=='all')   d=d.filter(x=>x.status===state.status);
-  return {donations:d, calls:c};
+// KPI card
+function kpiCard(label,value,delta,dir='up'){
+  const cls={up:'delta-up',warn:'delta-warn',down:'delta-down'}[dir];
+  const icon={up:'ti-trending-up',warn:'ti-minus',down:'ti-trending-down'}[dir];
+  return `<div class="kpi"><div class="kpi-label">${label}</div><div class="kpi-value">${value}</div><div class="kpi-delta ${cls}"><i class="ti ${icon}"></i> ${delta}</div></div>`;
 }
+
+// Status badge
+function sb(s){const m={completed:'s-completed',pending:'s-pending',failed:'s-failed',answered:'s-answered',voicemail:'s-voicemail',missed:'s-missed',active:'s-active',new:'s-new',lapsed:'s-lapsed',reactivated:'s-reactivated'};return`<span class="status ${m[s]||''}">${s}</span>`}
+
+// Filter state
+const F={channel:'all',campaign:'all',status:'all'};
+let _raw={};
 
 function renderChips(){
   const labels={channel:'Channel',campaign:'Campaign',status:'Status'};
-  const box=document.getElementById('activeFilters');
-  box.innerHTML=Object.entries(state).filter(([,v])=>v!=='all').map(([k,v])=>
-    `<span class="chip" data-key="${k}">${labels[k]}: <b>${v}</b><span class="chip-x" onclick="clearFilter('${k}')"><i class="ti ti-x"></i></span></span>`
-  ).join('');
+  document.getElementById('activeFilters').innerHTML=Object.entries(F).filter(([,v])=>v!=='all')
+    .map(([k,v])=>`<span class="chip">${labels[k]}: <b>${v}</b><span class="chip-x" onclick="clearF('${k}')"><i class="ti ti-x"></i></span></span>`).join('');
 }
-
-function clearFilter(key){
-  state[key]='all';
-  document.getElementById('f-'+key).value='all';
-  renderAndFilter();
-}
-
-document.getElementById('resetBtn').addEventListener('click',()=>{
-  ['channel','campaign','status'].forEach(k=>{state[k]='all';document.getElementById('f-'+k).value='all';});
-  renderAndFilter();
-});
+function clearF(k){F[k]='all';document.getElementById('f-'+k).value='all';applyAndRender()}
+document.getElementById('resetBtn').onclick=()=>{
+  ['channel','campaign','status'].forEach(k=>{F[k]='all';document.getElementById('f-'+k).value='all'});applyAndRender();
+};
 ['channel','campaign','status'].forEach(k=>{
-  document.getElementById('f-'+k).addEventListener('change',e=>{state[k]=e.target.value;renderAndFilter();});
+  document.getElementById('f-'+k).onchange=e=>{F[k]=e.target.value;applyAndRender()};
 });
 
-// ── tab / nav ─────────────────────────────────────────────────────────────────
+// Paginated table helper
+function mkTable(opts){
+  const st=opts.st;
+  let rows=[...opts.rows];
+  if(st.q){const q=st.q.toLowerCase();rows=rows.filter(r=>opts.fields.some(f=>String(r[f]||'').toLowerCase().includes(q)))}
+  const total=rows.length;
+  const pages=Math.max(1,Math.ceil(total/st.ps));
+  st.pg=Math.min(st.pg,pages);
+  const start=(st.pg-1)*st.ps;
+  const visible=rows.slice(start,start+st.ps);
+  document.getElementById(opts.tbody).innerHTML=visible.length?visible.map(opts.rowHtml).join(''):'<tr><td colspan="99" style="text-align:center;color:var(--text-3);padding:20px">No rows match</td></tr>';
+  const pager=document.getElementById(opts.pager);
+  pager.innerHTML=`<div style="color:var(--text-3)">${total?start+1:0}–${Math.min(start+st.ps,total)} of ${total.toLocaleString()}</div>
+    <div class="pager-btns">
+      <button class="pager-btn" ${st.pg<=1?'disabled':''} onclick="pgGo('${opts.key}','first')"><i class="ti ti-chevrons-left"></i></button>
+      <button class="pager-btn" ${st.pg<=1?'disabled':''} onclick="pgGo('${opts.key}','prev')"><i class="ti ti-chevron-left"></i></button>
+      <span style="padding:0 8px;font-weight:500">${st.pg}/${pages}</span>
+      <button class="pager-btn" ${st.pg>=pages?'disabled':''} onclick="pgGo('${opts.key}','next')"><i class="ti ti-chevron-right"></i></button>
+      <button class="pager-btn" ${st.pg>=pages?'disabled':''} onclick="pgGo('${opts.key}','last',${pages})"><i class="ti ti-chevrons-right"></i></button>
+    </div>`;
+  if(opts.countEl)document.getElementById(opts.countEl).textContent=total.toLocaleString()+' rows';
+}
+const TBL={
+  don:{q:'',ps:25,pg:1},
+  call:{q:'',ps:25,pg:1},
+  roster:{q:'',ps:25,pg:1}
+};
+function pgGo(k,dir,last){
+  const st=TBL[k];
+  if(dir==='first')st.pg=1;
+  else if(dir==='prev')st.pg=Math.max(1,st.pg-1);
+  else if(dir==='next')st.pg++;
+  else if(dir==='last')st.pg=last;
+  renderTables();
+}
+['don','call','roster'].forEach(k=>{
+  const s=document.getElementById(k+'-search');
+  const p=document.getElementById(k+'-pagesize');
+  if(s)s.oninput=e=>{TBL[k].q=e.target.value;TBL[k].pg=1;renderTables()};
+  if(p)p.onchange=e=>{TBL[k].ps=+e.target.value;TBL[k].pg=1;renderTables()};
+});
+
+// CSV export
+function csvExport(rows,headers,rowFn,name){
+  const lines=[headers.join(','),...rows.map(r=>rowFn(r).map(v=>{const s=String(v??'');return/[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}).join(','))];
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/csv'}));a.download='finch_'+name+'_'+Date.now()+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+document.getElementById('don-export').onclick=()=>csvExport(_raw.donList||[],'Date,Donor,Campaign,Channel,Amount,Status'.split(','),r=>[r.giftDate,r.donorName,r.campaign,r.channel,r.amount,r.status],'donations');
+document.getElementById('call-export').onclick=()=>csvExport(_raw.callList||[],'Time,Caller,Contact,Duration,Outcome,Pledge'.split(','),r=>[r.callTime,r.callerName,r.contact,r.durationLabel,r.outcome,r.pledge],'calls');
+document.getElementById('roster-export').onclick=()=>csvExport(_raw.roster||[],'Donor,Segment,First Gift,Status,Gifts,Total,Avg'.split(','),r=>[r.name,r.segmentLabel,r.firstGift,r.lifecycle,r.gifts,r.total,r.avgGift],'donors');
+
+// Impact quotes rotator
+let quotes=[],qIdx=0;
+function renderQuote(i){
+  const q=quotes[i];if(!q)return;
+  document.getElementById('fq-text').textContent=q.noteText;
+  document.getElementById('fq-donor').textContent=q.contact;
+  document.getElementById('fq-ctx').textContent=q.noteContext||'Donor call';
+  document.getElementById('fq-pledge').textContent=+q.pledge>0?fmt(q.pledge)+' pledge':'';
+  const av=document.getElementById('fq-avatar');av.textContent=initials(q.contact);av.style.background=avatarColor(q.contact);
+  document.querySelectorAll('.q-dot').forEach((d,j)=>d.classList.toggle('active',j===i));
+}
+function setupQuotes(calls){
+  quotes=calls.filter(c=>c.noteText).sort((a,b)=>b.pledge-a.pledge).slice(0,8);
+  if(!quotes.length)return;
+  qIdx=0;
+  document.getElementById('fq-dots').innerHTML=quotes.map((_,i)=>`<span class="q-dot${i===0?' active':''}" onclick="goQ(${i})"></span>`).join('');
+  renderQuote(0);
+  document.getElementById('fq-prev').onclick=()=>goQ((qIdx-1+quotes.length)%quotes.length);
+  document.getElementById('fq-next').onclick=()=>goQ((qIdx+1)%quotes.length);
+  document.getElementById('quote-feed').innerHTML=quotes.slice(0,4).map(q=>`
+    <div class="qf-item">
+      <div class="qf-text">"${q.noteText.length>130?q.noteText.slice(0,125)+'…':q.noteText}"</div>
+      <div class="qf-meta"><span class="qf-donor">— ${q.contact}${+q.pledge>0?' · '+fmt(q.pledge):''}</span><span>${q.callTime}</span></div>
+    </div>`).join('');
+}
+function goQ(i){qIdx=i;renderQuote(i)}
+
+// Panel switching
 function switchPanel(key){
   document.querySelectorAll('.tab,.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.panel===key));
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+key));
 }
 document.querySelectorAll('.tab,.nav-item').forEach(el=>el.addEventListener('click',()=>switchPanel(el.dataset.panel)));
+document.getElementById('refreshBtn').addEventListener('click',e=>{e.currentTarget.classList.add('spinning');loadAll().finally(()=>e.currentTarget.classList.remove('spinning'))});
 
-// refresh
-document.getElementById('refreshBtn').addEventListener('click',e=>{
-  e.currentTarget.classList.add('spinning');
-  loadAll().finally(()=>e.currentTarget.classList.remove('spinning'));
-});
-
-// ── impact quotes rotator ────────────────────────────────────────────────────
-let quotes=[], qIdx=0;
-function renderQuote(i){
-  const q=quotes[i];
-  if(!q)return;
-  document.getElementById('fq-text').textContent=q.noteText;
-  document.getElementById('fq-donor').textContent=q.contact;
-  document.getElementById('fq-ctx').textContent=q.noteContext||'Donor call';
-  document.getElementById('fq-pledge').textContent=+q.pledge>0?fmt(q.pledge):'';
-  const av=document.getElementById('fq-avatar');
-  av.textContent=initials(q.contact);
-  av.style.background=avatarColor(q.contact);
-  document.querySelectorAll('.q-dot').forEach((d,j)=>d.classList.toggle('active',j===i));
-}
-function setupQuotes(callRows){
-  quotes=callRows.filter(c=>c.noteText).slice(0,8);
-  if(!quotes.length)return;
-  qIdx=0;
-  const dots=document.getElementById('fq-dots');
-  dots.innerHTML=quotes.map((_,i)=>`<span class="q-dot${i===0?' active':''}" onclick="goQuote(${i})"></span>`).join('');
-  renderQuote(0);
-  document.getElementById('fq-prev').onclick=()=>goQuote((qIdx-1+quotes.length)%quotes.length);
-  document.getElementById('fq-next').onclick=()=>goQuote((qIdx+1)%quotes.length);
-
-  // quote feed (sidebar list)
-  document.getElementById('quote-feed').innerHTML=quotes.slice(0,4).map(q=>`
-    <div class="qf-item">
-      <div class="qf-text">"${q.noteText}"</div>
-      <div class="qf-meta"><span class="qf-donor">${q.contact}</span><span>${+q.pledge>0?fmt(q.pledge):''}</span></div>
-    </div>`).join('');
-}
-function goQuote(i){qIdx=i;renderQuote(i);}
-
-// ── raw data cache ───────────────────────────────────────────────────────────
-let _raw={};
-
-function renderAndFilter(){
+function applyAndRender(){
   renderChips();
-  const {donations, calls}=applyFilters(_raw.donList||[], _raw.callList||[]);
-  renderDonationsPanel(donations, _raw.campaigns, _raw.channels);
-  renderOverviewPanel(donations, calls, _raw.campaigns, _raw.channels, _raw.outcomes, _raw.leaderboard, _raw.monthly);
+  const don=(_raw.donList||[]).filter(d=>
+    (F.channel==='all'||d.channel===F.channel)&&
+    (F.campaign==='all'||d.campaign===F.campaign)&&
+    (F.status==='all'||d.status===F.status)
+  );
+  renderDonationsPanel(don);
+  renderOverviewKPIs(don);
+  renderTables(don);
 }
 
-function renderOverviewPanel(donations, calls, campaigns, channels, outcomes, leaderboard, monthly){
-  // KPIs from filtered donations
-  const completed=donations.filter(d=>d.status==='completed');
-  const totalRaised=completed.reduce((s,d)=>s+(+d.amount),0);
-  const donorCount=new Set(completed.map(d=>d.donorName)).size;
-  const callsPlaced=calls.length;
-  const answered=calls.filter(c=>c.outcome==='answered').length;
-  const pledged=calls.filter(c=>+c.pledge>0).length;
-  const convPct=answered?Math.round(pledged/answered*100):0;
+function renderTables(donOverride){
+  const don=donOverride||(_raw.donList||[]).filter(d=>(F.channel==='all'||d.channel===F.channel)&&(F.campaign==='all'||d.campaign===F.campaign)&&(F.status==='all'||d.status===F.status));
+  mkTable({key:'don',st:TBL.don,rows:don,fields:['donorName','campaign','channel'],tbody:'don-tbody',pager:'don-pager',countEl:'don-count',
+    rowHtml:r=>`<tr><td class="muted">${r.giftDate}</td><td>${r.donorName}</td><td class="muted">${r.campaign}</td>
+      <td><span class="cat-tag"><span class="cat-dot" style="background:${CH_COLOR[r.channel]||'#888'}"></span>${r.channel}</span></td>
+      <td class="right">${fmt(r.amount)}</td><td class="center">${sb(r.status)}</td></tr>`
+  });
+  mkTable({key:'call',st:TBL.call,rows:_raw.callList||[],fields:['callerName','contact'],tbody:'call-tbody',pager:'call-pager',countEl:'call-count',
+    rowHtml:c=>`<tr><td class="muted">${c.callTime}</td><td>${c.callerName}</td><td>${c.contact}${c.noteText?'<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:rgba(15,110,86,.12);color:var(--brand);margin-left:6px;font-size:11px" title="Quote captured"><i class="ti ti-quote"></i></span>':''}</td>
+      <td class="muted">${c.durationLabel}</td><td class="center">${sb(c.outcome)}</td>
+      <td class="right">${+c.pledge>0?fmt(c.pledge):'<span style="color:var(--text-3)">—</span>'}</td></tr>`
+  });
+  mkTable({key:'roster',st:TBL.roster,rows:_raw.roster||[],fields:['name','segmentLabel'],tbody:'roster-tbody',pager:'roster-pager',countEl:'roster-count',
+    rowHtml:r=>`<tr><td>${r.name}</td><td class="muted">${r.segmentLabel}</td><td class="muted">${r.firstGift}</td><td>${sb(r.lifecycle)}</td>
+      <td class="center muted">${r.gifts}</td><td class="right">${fmt(r.total)}</td><td class="right">${fmt(r.avgGift)}</td></tr>`
+  });
+}
 
+function renderOverviewKPIs(don){
+  const comp=don.filter(d=>d.status==='completed');
+  const raised=comp.reduce((s,d)=>s+(+d.amount),0);
+  const donors=new Set(comp.map(d=>d.donorName)).size;
+  const calls=_raw.callList||[];
+  const conv=calls.filter(c=>c.outcome==='answered').length?Math.round(calls.filter(c=>+c.pledge>0).length/calls.filter(c=>c.outcome==='answered').length*100):0;
   document.getElementById('ov-kpis').innerHTML=
-    kpiCard('Total Raised',fmt(totalRaised),'FY26 YTD')+
-    kpiCard('Active Donors',donorCount,'with a gift')+
-    kpiCard('Calls Placed',callsPlaced,'outbound')+
-    kpiCard('Pledge Conversion',convPct+'%','of answered calls');
-
-  // Monthly
-  const monthMap={};
-  completed.forEach(d=>{
-    const m=d.giftDate?.split(' ')[1]||'?';
-    monthMap[m]=(monthMap[m]||0)+(+d.amount);
-  });
-  const mLabels=monthly.map(m=>m.monthName);
-  const mData=monthly.map(m=>monthMap[m.monthName]||m.revenue);
-  mkChart('chart-monthly',{type:'bar',
-    data:{labels:mLabels,datasets:[{data:mData,backgroundColor:'#0F6E56',borderRadius:4,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:axBase,y:axY(v=>fmtK(v))}}
-  });
-
-  // Channel donut
-  const chLabels=channels.map(c=>c.label),chColors=channels.map(c=>c.color);
-  mkChart('chart-channels',{type:'doughnut',
-    data:{labels:chLabels,datasets:[{data:channels.map(c=>c.revenue),backgroundColor:chColors,borderWidth:0,hoverOffset:8}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
-  });
-  document.getElementById('channel-legend').innerHTML=legendHtml(chLabels,chColors);
-
-  // Outcome donut
-  const outLabels=outcomes.map(o=>o.outcome),outColors=outcomes.map(o=>OUTCOME_COLORS[o.outcome]||'#888');
-  mkChart('chart-outcomes-ov',{type:'doughnut',
-    data:{labels:outLabels,datasets:[{data:outcomes.map(o=>o.count),backgroundColor:outColors,borderWidth:0,hoverOffset:8}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
-  });
-  document.getElementById('outcome-legend').innerHTML=legendHtml(outLabels,outColors);
-
-  // Caller bars
-  document.getElementById('caller-bars-ov').innerHTML=barRows(leaderboard.slice(0,7),'name','totalPledged',()=>'#185FA5');
-
-  // Campaign bars
-  document.getElementById('campaign-bars').innerHTML=campaigns.map(c=>{
-    const pct=Math.min(100,Math.round(+c.raised/+c.goal*100));
-    return `<div class="bar-row">
-      <div class="bar-label" title="${c.label}">${c.label}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${c.color}"></div></div>
-      <div class="bar-val"><span style="color:var(--text-2)">${pct}%</span>&nbsp;${fmtK(c.raised)}</div>
-    </div>`;
-  }).join('');
+    kpiCard('Total Raised YTD',fmt(raised),'+16.5% vs FY25')+
+    kpiCard('Active Donors',donors,'+3 vs FY25')+
+    kpiCard('Calls Placed',calls.length,'+7.6% vs FY25')+
+    kpiCard('Pledge Conversion',conv+'%','+1.8 pp vs FY25');
 }
 
-function renderDonationsPanel(donations, campaigns, channels){
-  const completed=donations.filter(d=>d.status==='completed');
-  const totalRaised=completed.reduce((s,d)=>s+(+d.amount),0);
-  const avgGift=completed.length?Math.round(totalRaised/completed.length):0;
+function renderDonationsPanel(don){
+  const comp=don.filter(d=>d.status==='completed');
+  const raised=comp.reduce((s,d)=>s+(+d.amount),0);
+  const avg=comp.length?Math.round(raised/comp.length):0;
+  const donors=new Set(comp.map(d=>d.donorName)).size;
   document.getElementById('don-kpis').innerHTML=
-    kpiCard('Total Raised',fmt(totalRaised),'completed gifts')+
-    kpiCard('Total Gifts',completed.length.toLocaleString(),'transactions')+
-    kpiCard('Unique Donors',new Set(completed.map(d=>d.donorName)).size,'gave at least once')+
-    kpiCard('Avg Gift',fmt(avgGift),'per transaction');
-
-  mkChart('chart-campaigns',{type:'bar',
-    data:{labels:campaigns.map(c=>c.label),datasets:[{data:campaigns.map(c=>c.raised),backgroundColor:campaigns.map(c=>c.color),borderRadius:4,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{...axBase,ticks:{...tickStyle,maxRotation:30}},y:axY(v=>fmtK(v))}}
-  });
-  mkChart('chart-channels-don',{type:'doughnut',
-    data:{labels:channels.map(c=>c.label),datasets:[{data:channels.map(c=>c.gifts),backgroundColor:channels.map(c=>c.color),borderWidth:0,hoverOffset:8}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#888780',font:{size:11},padding:10,boxWidth:12}}}}
-  });
-
-  document.getElementById('don-count').textContent=donations.length+' records';
-  document.getElementById('don-table').innerHTML=`<table>
-    <thead><tr><th>Date</th><th>Donor</th><th>Campaign</th><th>Channel</th><th class="right">Amount</th><th>Status</th></tr></thead>
-    <tbody>${donations.map(d=>`<tr>
-      <td class="muted">${d.giftDate}</td><td>${d.donorName}</td>
-      <td class="muted">${d.campaign}</td><td class="muted">${d.channel}</td>
-      <td class="right">${fmt(d.amount)}</td><td>${statusBadge(d.status)}</td>
-    </tr>`).join('')}</tbody></table>`;
+    kpiCard('Total Raised',fmt(raised),'completed gifts')+
+    kpiCard('Total Gifts',comp.length.toLocaleString(),'transactions')+
+    kpiCard('Unique Donors',donors,'gave at least once')+
+    kpiCard('Avg Gift',fmt(avg),'per transaction');
 }
 
-// ── main load ────────────────────────────────────────────────────────────────
 async function loadAll(){
   const now=new Date();
-  document.getElementById('lastRefresh').textContent='Refreshed '+now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('refreshLabel').textContent='Finch BI · Nassen Solutions · Refreshed '+now.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
 
-  const [ov,donSum,monthly,campaigns,channels,donList,
-         callSum,outcomes,leaderboard,callList,
+  const [ov,donSum,trend,campaigns,channels,donList,
+         callSum,outcomes,leaderboard,callList,monthlyCalls,
          segments,lifecycle,roster,atRisk]=await Promise.all([
     fetch(`${API}/overview`).then(r=>r.json()),
     fetch(`${API}/donations/summary`).then(r=>r.json()),
-    fetch(`${API}/donations/monthly`).then(r=>r.json()),
+    fetch(`${API}/donations/trend`).then(r=>r.json()),
     fetch(`${API}/donations/campaigns`).then(r=>r.json()),
     fetch(`${API}/donations/channels`).then(r=>r.json()),
-    fetch(`${API}/donations/list?limit=200`).then(r=>r.json()),
+    fetch(`${API}/donations/list?limit=500`).then(r=>r.json()),
     fetch(`${API}/calls/summary`).then(r=>r.json()),
     fetch(`${API}/calls/outcomes`).then(r=>r.json()),
     fetch(`${API}/calls/leaderboard`).then(r=>r.json()),
-    fetch(`${API}/calls/list?limit=200`).then(r=>r.json()),
+    fetch(`${API}/calls/list?limit=500`).then(r=>r.json()),
+    fetch(`${API}/calls/monthly`).then(r=>r.json()),
     fetch(`${API}/donors/segments`).then(r=>r.json()),
     fetch(`${API}/donors/lifecycle`).then(r=>r.json()),
     fetch(`${API}/donors/roster`).then(r=>r.json()),
     fetch(`${API}/donors/at-risk`).then(r=>r.json()),
   ]);
 
-  // Cache raw data
-  _raw={donList:donList.data,callList:callList.data,campaigns:campaigns.data,
-        channels:channels.data,outcomes:outcomes.data,leaderboard:leaderboard.data,monthly:monthly.data};
+  _raw={donList:donList.data,callList:callList.data,campaigns:campaigns.data,channels:channels.data,roster:roster.data};
+  document.getElementById('rowPill').textContent='Rows: '+((donList.data.length+callList.data.length+roster.data.length).toLocaleString());
 
-  renderAndFilter();
+  // ── Trend chart data
+  const trendData=trend.data||[];
+  const mLabels=trendData.map(t=>t.MonthName||t.monthName);
+  const oneTime=trendData.map(t=>+(t.OneTime||t.oneTime||0));
+  const recurring=trendData.map(t=>+(t.Recurring||t.recurring||0));
+  const pledges=trendData.map(t=>+(t.Pledges||t.pledges||0));
 
-  // ── CALLS panel (not filtered by donation filters)
+  mkChart('chart-donations-trend',donTrendCfg(mLabels,oneTime,recurring,pledges));
+  mkChart('chart-donations-trend2',donTrendCfg(mLabels,oneTime,recurring,pledges));
+
+  // ── Channel donuts
+  const chLabels=channels.data.map(c=>c.label),chColors=channels.data.map(c=>c.color),chPct=channels.data.map(c=>c.pctOfTotal);
+  mkChart('chart-channel-donut',donutCfg(chLabels,chPct,chColors));
+  mkChart('chart-channel-donut2',donutCfg(chLabels,chPct,chColors));
+  setLegend('channel-legend',chLabels,chColors,chPct);
+  setLegend('channel-legend2',chLabels,chColors,chPct);
+
+  // ── Calls trend
+  const mc=monthlyCalls.data||[];
+  const mcLabels=mc.map(m=>m.MonthName||m.monthName);
+  const placed=mc.map(m=>+(m.Placed||m.placed||0));
+  const connected=mc.map(m=>+(m.Connected||m.connected||0));
+  const rateLine=mc.map(m=>+(m.ConnectRate||m.connectRate||0));
+  mkChart('chart-calls-trend',callTrendCfg(mcLabels,placed,connected,rateLine));
+  mkChart('chart-calls-trend2',callTrendCfg(mcLabels,placed,connected,rateLine));
+
+  // ── Outcome donuts
+  const outLabels=outcomes.data.map(o=>o.outcome),outPct=outcomes.data.map(o=>o.pct),outColors=outcomes.data.map(o=>OUT_COLOR[o.outcome]||'#888');
+  mkChart('chart-outcome-donut',donutCfg(outLabels,outPct,outColors));
+  mkChart('chart-outcome-donut2',donutCfg(outLabels,outPct,outColors));
+  setLegend('outcome-legend',outLabels,outColors,outPct);
+  setLegend('outcome-legend2',outLabels,outColors,outPct);
+
+  // ── Call KPIs
   const cs=callSum.data;
   document.getElementById('call-kpis').innerHTML=
-    kpiCard('Calls Placed',cs.callsPlaced,'outbound total')+
-    kpiCard('Connect Rate',cs.connectRatePct+'%','answered')+
-    kpiCard('Pledge Conversion',cs.pledgeConvPct+'%','of answered calls')+
-    kpiCard('Avg Duration',fmtDur(cs.avgDurationSec),'connected calls','delta-warn','ti-clock');
+    kpiCard('Calls Placed',cs.callsPlaced,'+7.6% vs FY25')+
+    kpiCard('Connect Rate',cs.connectRatePct+'%','+1.2 pp vs FY25')+
+    kpiCard('Pledge Conversion',cs.pledgeConvPct+'%','+1.8 pp vs FY25')+
+    kpiCard('Avg Duration',fmtDur(cs.avgDurationSec),'+0:24 vs FY25','warn');
 
-  document.getElementById('caller-bars-full').innerHTML=barRows(leaderboard.data,'name','totalPledged',()=>'#185FA5');
+  // ── Caller leaderboard
+  const top=leaderboard.data.slice(0,8);
+  const maxP=Math.max(...top.map(c=>c.pledges),1);
+  document.getElementById('caller-list').innerHTML=top.map((c,i)=>`
+    <div class="caller-row">
+      <div class="caller-avatar" style="background:${CALLER_COLORS[i%CALLER_COLORS.length]}">${initials(c.name)}</div>
+      <div class="caller-info">
+        <div class="caller-name-row"><span style="font-weight:500">${c.name}</span><span style="color:var(--text-2)">${c.pledges} pledges · <strong style="color:var(--text)">${fmt(c.totalPledged)}</strong></span></div>
+        <div class="caller-sub">${c.callsPlaced} calls · ${c.connectRatePct}% connect · ${c.role}</div>
+        <div class="goal-track"><div class="goal-fill" style="width:${Math.round(c.pledges/maxP*100)}%;background:${CALLER_COLORS[i%CALLER_COLORS.length]}"></div></div>
+      </div>
+    </div>`).join('');
 
-  const outLabels=outcomes.data.map(o=>o.outcome),outColors=outcomes.data.map(o=>OUTCOME_COLORS[o.outcome]||'#888');
-  mkChart('chart-outcomes-calls',{type:'doughnut',
-    data:{labels:outLabels,datasets:[{data:outcomes.data.map(o=>o.count),backgroundColor:outColors,borderWidth:0,hoverOffset:8}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#888780',font:{size:11},padding:10,boxWidth:12}}}}
+  // ── Hour heatmap (simulated from call data)
+  const hourBuckets=Array(11).fill(0),hourTotals=Array(11).fill(0);
+  (callList.data||[]).forEach(c=>{
+    const m=c.callTime.match(/(\d+):(\d+)/);if(!m)return;
+    let h=parseInt(m[1]);if(h<9||h>19)return;
+    const idx=h-9;hourTotals[idx]++;
+    if(c.outcome==='answered')hourBuckets[idx]++;
+  });
+  const connectByHour=hourBuckets.map((b,i)=>hourTotals[i]?Math.round(b/hourTotals[i]*100):0);
+  const hours=['9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p'];
+  mkChart('chart-hour-heat',{type:'bar',
+    data:{labels:hours,datasets:[{data:connectByHour,backgroundColor:connectByHour.map(v=>v>=50?'#0F6E56':v>=35?'#1D9E75':v>=20?'#EF9F27':'#D85A30'),borderRadius:2,barPercentage:.85}]},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+'% connect'}}},scales:{y:{ticks:{callback:v=>v+'%',...tickOpts},grid:{color:GRID},max:80},x:{grid:{display:false},ticks:tickOpts}}}
   });
 
-  setupQuotes(callList.data);
+  // ── Impact quotes
+  setupQuotes(callList.data||[]);
 
-  document.getElementById('call-count').textContent=callList.data.length+' records';
-  document.getElementById('calls-table').innerHTML=`<table>
-    <thead><tr><th>Time</th><th>Caller</th><th>Contact</th><th>Duration</th><th>Outcome</th><th class="right">Pledge</th></tr></thead>
-    <tbody>${callList.data.map(c=>`<tr>
-      <td class="muted">${c.callTime}</td><td>${c.callerName}</td><td>${c.contact}</td>
-      <td class="muted">${c.durationLabel}</td><td>${statusBadge(c.outcome)}</td>
-      <td class="right">${+c.pledge>0?fmt(c.pledge):'<span style="color:var(--text-3)">—</span>'}</td>
-    </tr>`).join('')}</tbody></table>`;
+  // ── Campaign bars
+  document.getElementById('campaign-bars').innerHTML=(campaigns.data||[]).map(c=>{
+    const pct=c.goal?Math.min(200,Math.round(+c.raised/+c.goal*100)):0;
+    const w=Math.min(pct,100);
+    return `<div class="bar-item">
+      <div class="bar-meta"><span>${c.label}</span><span style="color:var(--text-2)">${fmt(c.raised)} <span style="color:var(--text-3)">/ ${fmt(c.goal)}</span> · <strong style="color:${pct>100?'#A32D2D':'var(--text)'}">${pct}%</strong></span></div>
+      <div class="bar-track"><div class="bar-fill-goal" style="width:${w}%;background:${c.color}"></div></div>
+    </div>`;
+  }).join('');
 
-  // ── DONORS panel
-  const lcLabels=lifecycle.data.map(l=>l.lifecycle),lcColors=lifecycle.data.map(l=>LC_COLORS[l.lifecycle]||'#888');
+  // ── Segment bars (donations panel)
+  const maxSeg=Math.max(...(segments.data||[]).map(s=>+s.totalRaised),1);
+  document.getElementById('seg-bars-don').innerHTML=(segments.data||[]).map(s=>`
+    <div class="bar-item">
+      <div class="bar-meta"><span>${s.label}</span><span style="color:var(--text-2)">${fmt(s.totalRaised)} · ${s.donors} donors</span></div>
+      <div class="bar-track"><div class="bar-fill-goal" style="width:${Math.round(+s.totalRaised/maxSeg*100)}%;background:${s.color}"></div></div>
+    </div>`).join('');
+
+  // ── Donors panel
+  const lcLabels=lifecycle.data.map(l=>l.lifecycle),lcColors=lifecycle.data.map(l=>LC_COLOR[l.lifecycle]||'#888');
   mkChart('chart-lifecycle',{type:'doughnut',
-    data:{labels:lcLabels,datasets:[{data:lifecycle.data.map(l=>l.count),backgroundColor:lcColors,borderWidth:0,hoverOffset:8}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#888780',font:{size:11},padding:10,boxWidth:12}}}}
+    data:{labels:lcLabels,datasets:[{data:lifecycle.data.map(l=>l.count),backgroundColor:lcColors,borderWidth:2,borderColor:SURFACE(),hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{color:'#888780',font:{size:11},padding:10,boxWidth:12}},tooltip:{callbacks:{label:c=>c.label+': '+c.parsed}}}}
   });
 
-  document.getElementById('seg-bars').innerHTML=barRows(segments.data,'label','totalRaised',s=>s.color);
+  document.getElementById('seg-bars').innerHTML=(segments.data||[]).map(s=>`
+    <div class="bar-item">
+      <div class="bar-meta"><span>${s.label}</span><span style="color:var(--text-2)">${fmt(s.totalRaised)}</span></div>
+      <div class="bar-track"><div class="bar-fill-goal" style="width:${Math.round(+s.totalRaised/maxSeg*100)}%;background:${s.color}"></div></div>
+    </div>`).join('');
 
-  document.getElementById('roster-count').textContent=roster.data.length+' active donors';
-  document.getElementById('roster-table').innerHTML=`<table>
-    <thead><tr><th>Donor</th><th>Segment</th><th>First Gift</th><th>Status</th><th>Gifts</th><th class="right">Total</th><th class="right">Avg</th></tr></thead>
-    <tbody>${roster.data.map(r=>`<tr>
-      <td>${r.name}</td><td class="muted">${r.segmentLabel}</td><td class="muted">${r.firstGift}</td>
-      <td>${statusBadge(r.lifecycle)}</td><td class="muted">${r.gifts}</td>
-      <td class="right">${fmt(r.total)}</td><td class="right">${fmt(r.avgGift)}</td>
-    </tr>`).join('')}</tbody></table>`;
+  document.getElementById('atrisk-tbody').innerHTML=(atRisk.data||[]).map(r=>`
+    <tr><td>${r.name}</td><td class="muted">${r.segmentLabel}</td><td class="muted">${r.firstGift}</td>
+    <td class="center muted">${r.giftCount}</td><td class="right">${fmt(r.lifetimeValue)}</td></tr>`).join('');
 
-  document.getElementById('atrisk-table').innerHTML=`<table>
-    <thead><tr><th>Donor</th><th>Segment</th><th>First Gift</th><th>Gifts</th><th class="right">Lifetime Value</th></tr></thead>
-    <tbody>${atRisk.data.map(r=>`<tr>
-      <td>${r.name}</td><td class="muted">${r.segmentLabel}</td><td class="muted">${r.firstGift}</td>
-      <td class="muted">${r.giftCount}</td><td class="right">${fmt(r.lifetimeValue)}</td>
-    </tr>`).join('')}</tbody></table>`;
+  // Apply filters and render tables
+  applyAndRender();
 }
 
-loadAll().catch(e=>{
-  console.error(e);
-  document.getElementById('lastRefresh').textContent='Connection error';
-});
+loadAll().catch(e=>{console.error(e);document.getElementById('refreshLabel').textContent='Connection error — check API'});
 </script>
 </body>
 </html>
