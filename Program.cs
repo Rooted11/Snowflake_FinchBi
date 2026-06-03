@@ -16,6 +16,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddSingleton<DbService>();
 builder.Services.AddScoped<FinchBiService>();
+builder.Services.AddHostedService<DataSimulatorService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
     p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));

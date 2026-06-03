@@ -292,3 +292,74 @@ public class FinchBiService
             ORDER BY ""Month"";";
         return await _db.QueryAsync<dynamic>(sql);
     }
+
+    // ── Daily trend (last 30 days) ─────────────────────────────────────────
+    public async Task<IEnumerable<dynamic>> GetDailyTrendAsync()
+    {
+        const string sql = @"
+            SELECT
+                gift_date                           AS ""Date"",
+                COALESCE(SUM(amount), 0)            AS ""Revenue"",
+                COUNT(*)::int                       AS ""Gifts""
+            FROM donations
+            WHERE status = 'completed'
+              AND gift_date >= CURRENT_DATE - INTERVAL '30 days'
+            GROUP BY gift_date
+            ORDER BY gift_date;";
+        return await _db.QueryAsync<dynamic>(sql);
+    }
+
+    // ── Hour heatmap ──────────────────────────────────────────────────────
+    public async Task<IEnumerable<dynamic>> GetHourHeatmapAsync()
+    {
+        const string sql = @"
+            SELECT
+                EXTRACT(HOUR FROM call_time)::int       AS ""Hour"",
+                COUNT(*)::int                           AS ""Total"",
+                COUNT(*) FILTER (WHERE outcome='answered')::int AS ""Connected"",
+                ROUND(
+                    COUNT(*) FILTER (WHERE outcome='answered') * 100.0
+                    / NULLIF(COUNT(*), 0), 1)            AS ""ConnectRate""
+            FROM calls
+            GROUP BY EXTRACT(HOUR FROM call_time)
+            ORDER BY ""Hour"";";
+        return await _db.QueryAsync<dynamic>(sql);
+    }
+
+    // ── CSV export data ───────────────────────────────────────────────────
+    public async Task<IEnumerable<DonationRow>> GetAllDonationsForExportAsync()
+    {
+        const string sql = @"
+            SELECT
+                TO_CHAR(d.gift_date, 'YYYY-MM-DD') AS ""GiftDate"",
+                d.donor_name                        AS ""DonorName"",
+                c.label                             AS ""Campaign"",
+                ch.label                            AS ""Channel"",
+                d.amount                            AS ""Amount"",
+                d.status                            AS ""Status""
+            FROM donations d
+            JOIN campaigns c  ON c.id  = d.campaign_id
+            JOIN channels  ch ON ch.id = d.channel_id
+            ORDER BY d.gift_date DESC;";
+        return await _db.QueryAsync<DonationRow>(sql);
+    }
+
+    public async Task<IEnumerable<CallRow>> GetAllCallsForExportAsync()
+    {
+        const string sql = @"
+            SELECT
+                TO_CHAR(call_time, 'YYYY-MM-DD HH24:MI') AS ""CallTime"",
+                caller_name                               AS ""CallerName"",
+                contact                                   AS ""Contact"",
+                CASE
+                    WHEN duration_sec = 0 THEN '0:00'
+                    ELSE FLOOR(duration_sec/60)::text || ':' ||
+                         LPAD((duration_sec%60)::text, 2, '0')
+                END                                       AS ""DurationLabel"",
+                outcome                                   AS ""Outcome"",
+                pledge                                    AS ""Pledge"",
+                note_text                                 AS ""NoteText""
+            FROM calls
+            ORDER BY call_time DESC;";
+        return await _db.QueryAsync<CallRow>(sql);
+    }

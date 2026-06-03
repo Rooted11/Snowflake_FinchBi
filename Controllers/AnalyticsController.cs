@@ -91,3 +91,39 @@ public class AnalyticsController : ControllerBase
     public async Task<IActionResult> GetAtRiskDonors()
         => Ok(new ApiResponse<IEnumerable<AtRiskDonor>> { Data = await _svc.GetAtRiskDonorsAsync() });
 }
+
+    // Extra endpoints
+    [HttpGet("donations/daily")]
+    public async Task<IActionResult> GetDailyTrend()
+    {
+        var data = await _svc.GetDailyTrendAsync();
+        return Ok(new ApiResponse<IEnumerable<dynamic>> { Data = data });
+    }
+
+    [HttpGet("calls/heatmap")]
+    public async Task<IActionResult> GetHourHeatmap()
+    {
+        var data = await _svc.GetHourHeatmapAsync();
+        return Ok(new ApiResponse<IEnumerable<dynamic>> { Data = data });
+    }
+
+    [HttpGet("donations/export")]
+    public async Task<IActionResult> ExportDonations()
+    {
+        var data = await _svc.GetAllDonationsForExportAsync();
+        var csv  = "Date,Donor,Campaign,Channel,Amount,Status\n" +
+                   string.Join("\n", data.Select(d =>
+                       $"{d.GiftDate},{d.DonorName},{d.Campaign},{d.Channel},{d.Amount},{d.Status}"));
+        return File(System.Text.Encoding.UTF8.GetBytes(csv), "text/csv", "donations.csv");
+    }
+
+    [HttpGet("calls/export")]
+    public async Task<IActionResult> ExportCalls()
+    {
+        var data = await _svc.GetAllCallsForExportAsync();
+        var csv  = "Time,Caller,Contact,Duration,Outcome,Pledge\n" +
+                   string.Join("\n", data.Select(c =>
+                       $"{c.CallTime},{c.CallerName},{c.Contact},{c.DurationLabel},{c.Outcome},{c.Pledge}"));
+        return File(System.Text.Encoding.UTF8.GetBytes(csv), "text/csv", "calls.csv");
+    }
+}
