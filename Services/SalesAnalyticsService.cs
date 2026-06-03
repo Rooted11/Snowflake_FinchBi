@@ -1,4 +1,5 @@
 using FinchBi.Api.Models;
+using Dapper;
 
 namespace FinchBi.Api.Services;
 
@@ -12,10 +13,10 @@ public class SalesAnalyticsService
     {
         const string sql = @"
             SELECT
-                COALESCE(SUM(total_amount), 0)            AS total_revenue,
-                COUNT(DISTINCT order_id)                  AS total_orders,
-                COUNT(DISTINCT customer_id)               AS unique_customers,
-                COALESCE(AVG(total_amount), 0)            AS avg_order_value
+                COALESCE(SUM(total_amount), 0)            AS ""TotalRevenue"",
+                COUNT(DISTINCT order_id)::int             AS ""TotalOrders"",
+                COUNT(DISTINCT customer_id)::int          AS ""UniqueCustomers"",
+                COALESCE(AVG(total_amount), 0)            AS ""AvgOrderValue""
             FROM orders
             WHERE EXTRACT(YEAR FROM order_date) = @year
               AND status != 'CANCELLED';";
@@ -28,16 +29,16 @@ public class SalesAnalyticsService
     {
         const string sql = @"
             SELECT
-                EXTRACT(MONTH FROM order_date)::int         AS month,
-                TO_CHAR(order_date, 'Mon')                  AS month_name,
-                COALESCE(SUM(total_amount), 0)              AS revenue,
-                COUNT(DISTINCT order_id)                    AS orders,
-                ROUND(AVG(total_amount)::numeric, 2)        AS avg_order_value
+                EXTRACT(MONTH FROM order_date)::int         AS ""Month"",
+                TO_CHAR(order_date, 'Mon')                  AS ""MonthName"",
+                COALESCE(SUM(total_amount), 0)              AS ""Revenue"",
+                COUNT(DISTINCT order_id)::int               AS ""Orders"",
+                ROUND(AVG(total_amount)::numeric, 2)        AS ""AvgOrderValue""
             FROM orders
             WHERE EXTRACT(YEAR FROM order_date) = @year
               AND status != 'CANCELLED'
             GROUP BY EXTRACT(MONTH FROM order_date), TO_CHAR(order_date, 'Mon')
-            ORDER BY month;";
+            ORDER BY ""Month"";";
 
         return await _db.QueryAsync<MonthlyRevenue>(sql, new { year });
     }
@@ -46,19 +47,19 @@ public class SalesAnalyticsService
     {
         const string sql = @"
             SELECT
-                p.product_name,
-                p.category,
-                SUM(oi.quantity)                                        AS units_sold,
-                SUM(oi.quantity * oi.unit_price)                        AS total_revenue,
+                p.product_name                                          AS ""ProductName"",
+                p.category                                              AS ""Category"",
+                SUM(oi.quantity)::int                                   AS ""UnitsSold"",
+                SUM(oi.quantity * oi.unit_price)                        AS ""TotalRevenue"",
                 ROUND(SUM(oi.quantity * oi.unit_price)
                     / NULLIF(SUM(SUM(oi.quantity * oi.unit_price)) OVER (), 0) * 100, 2)
-                                                                        AS revenue_pct
+                                                                        AS ""RevenuePct""
             FROM order_items oi
             JOIN products p ON p.product_id = oi.product_id
             JOIN orders o   ON o.order_id   = oi.order_id
             WHERE o.status != 'CANCELLED'
             GROUP BY p.product_name, p.category
-            ORDER BY total_revenue DESC
+            ORDER BY ""TotalRevenue"" DESC
             LIMIT @topN;";
 
         return await _db.QueryAsync<TopProduct>(sql, new { topN });
@@ -92,13 +93,13 @@ public class SalesAnalyticsService
                     WHEN r_score < 2  AND f_score >= 3 THEN 'At Risk'
                     WHEN r_score < 2  AND f_score < 2  THEN 'Churned'
                     ELSE 'Potential Loyalists'
-                END                             AS segment,
-                COUNT(*)                        AS customer_count,
-                ROUND(AVG(monetary)::numeric,2) AS avg_ltv,
-                ROUND(AVG(recency)::numeric,0)::int AS avg_recency_days
+                END                                 AS ""Segment"",
+                COUNT(*)::int                       AS ""CustomerCount"",
+                ROUND(AVG(monetary)::numeric, 2)    AS ""AvgLtv"",
+                ROUND(AVG(recency)::numeric, 0)::int AS ""AvgRecencyDays""
             FROM scored
-            GROUP BY segment
-            ORDER BY avg_ltv DESC;";
+            GROUP BY ""Segment""
+            ORDER BY ""AvgLtv"" DESC;";
 
         return await _db.QueryAsync<CustomerSegment>(sql);
     }
@@ -107,17 +108,17 @@ public class SalesAnalyticsService
     {
         const string sql = @"
             SELECT
-                c.region,
-                SUM(o.total_amount)                                         AS revenue,
-                COUNT(DISTINCT o.order_id)                                  AS orders,
-                COUNT(DISTINCT o.customer_id)                               AS customers,
+                c.region                                                    AS ""Region"",
+                SUM(o.total_amount)                                         AS ""Revenue"",
+                COUNT(DISTINCT o.order_id)::int                             AS ""Orders"",
+                COUNT(DISTINCT o.customer_id)::int                          AS ""Customers"",
                 ROUND(SUM(o.total_amount)
-                    / NULLIF(COUNT(DISTINCT o.customer_id), 0)::numeric, 2) AS revenue_per_customer
+                    / NULLIF(COUNT(DISTINCT o.customer_id), 0)::numeric, 2) AS ""RevenuePerCustomer""
             FROM orders o
             JOIN customers c ON c.customer_id = o.customer_id
             WHERE o.status != 'CANCELLED'
             GROUP BY c.region
-            ORDER BY revenue DESC;";
+            ORDER BY ""Revenue"" DESC;";
 
         return await _db.QueryAsync<RegionPerformance>(sql);
     }
@@ -126,13 +127,13 @@ public class SalesAnalyticsService
     {
         const string sql = @"
             SELECT
-                product_id,
-                product_name,
-                category,
-                stock_quantity,
-                reorder_point,
-                unit_cost,
-                stock_quantity < reorder_point AS needs_reorder
+                product_id::text                            AS ""ProductId"",
+                product_name                                AS ""ProductName"",
+                category                                    AS ""Category"",
+                stock_quantity                              AS ""StockQuantity"",
+                reorder_point                               AS ""ReorderPoint"",
+                unit_cost                                   AS ""UnitCost"",
+                (stock_quantity < reorder_point)            AS ""NeedsReorder""
             FROM products
             WHERE stock_quantity <= @threshold
               AND is_active = TRUE
