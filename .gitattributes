@@ -1,0 +1,8 @@
+# GitHub language-bar tuning (Linguist) — affects GitHub's stats display only,
+# no functional/build/runtime effect.
+
+# index.html is a generated, byte-for-byte copy of dashboard.html — don't double-count it.
+index.html      linguist-generated=true
+
+# The single-file dashboards are the UI layer, not the code we want the language bar to measure.
+dashboard.html  linguist-documentation=true
