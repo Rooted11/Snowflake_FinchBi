@@ -1,9 +1,9 @@
 # Sypher BI — Donations & Calls Analytics
 
 Fundraising business-intelligence for nonprofits: a donor + call-center analytics
-**API** (ASP.NET Core 8 + [Dapper](https://github.com/DapperLib/Dapper) +
-[Npgsql](https://www.npgsql.org/)) on a serverless **Neon** Postgres database, plus a
-self-contained **dashboard** (`dashboard.html` / `index.html`, Chart.js) that renders it.
+**API** (ASP.NET Core 8 + [Dapper](https://github.com/DapperLib/Dapper)) on a
+**pluggable warehouse — Neon Postgres (default) or Snowflake** — plus a self-contained
+**dashboard** (`dashboard.html` / `index.html`, Chart.js) that renders it.
 
 ```
 git clone https://github.com/Rooted11/sypher-bi-backend.git
@@ -65,18 +65,57 @@ Swagger UI is served at the site root: **http://localhost:5000**.
 
 ## Configuration & secrets
 
-The Neon connection string is resolved from `ConnectionStrings:Neon`, sourced (in order)
-from environment, then `appsettings.{Environment}.json`, then `appsettings.json`.
+Connection strings are resolved from `ConnectionStrings:*`, sourced (in order) from
+environment, then `appsettings.{Environment}.json`, then `appsettings.json`.
 
 | Where | Use | Committed? |
 |-------|-----|-----------|
-| `ConnectionStrings__Neon` env var | **Production / Render** | no |
+| `ConnectionStrings__Neon` / `ConnectionStrings__Snowflake` env vars | **Production / Render** | no |
 | `appsettings.Development.json` | **Local dev** | no — git-ignored |
-| `appsettings.json` | non-secret placeholder only | yes |
+| `appsettings.json` | non-secret placeholders + `Database:Provider` | yes |
 
 > **Never put credentials in `appsettings.json`** — it's committed. The tracked file holds
-> a placeholder; the real value comes from the env var or the git-ignored dev file. If a
+> placeholders; the real values come from env vars or the git-ignored dev file. If a
 > credential is ever committed, **rotate it** (removing it from history does not un-leak it).
+
+---
+
+## Warehouse providers (Neon / Snowflake)
+
+The API is warehouse-pluggable. `Database:Provider` selects the backend at startup:
+
+```json
+"Database": { "Provider": "Neon" }      // or "Snowflake"
+```
+
+How it's wired (all in `Services/`):
+
+- **`IDbConnectionFactory`** → `PostgresConnectionFactory` / `SnowflakeConnectionFactory`
+  open connections to the chosen warehouse (Npgsql vs `Snowflake.Data`).
+- **`IAnalyticsSql`** → `PostgresAnalyticsSql` / `SnowflakeAnalyticsSql` hold the
+  dialect-specific queries (`FILTER` → `CASE`, `::text` → `::varchar`, date math, etc.).
+- `SypherBiService` is dialect-agnostic — same endpoints, swappable warehouse.
+- `/health` reports the active `provider`, and the dashboard's **data-source badge**
+  (`assets/sypher-source.js`) shows it live with round-trip latency.
+
+### Enabling Snowflake
+1. Create the schema: run **`snowflake/schema.sql`** in a Snowflake worksheet.
+2. Load data from Neon: **`python tools/neon_to_snowflake.py`** (see `tools/requirements.txt`
+   and the env vars documented at the top of the script).
+3. Set `Database:Provider=Snowflake` and provide `ConnectionStrings__Snowflake`.
+
+> The Snowflake SQL dialect is a best-effort starting point — validate it against a live
+> account (esp. `LIMIT` parameter binding) before relying on it in production.
+
+## Live data & 24-hour refresh
+
+`DataSimulatorService` keeps the dashboard live (Neon only):
+
+- **Hourly** incremental top-ups (a few donations + calls).
+- A **fresh full rebuild every 24 h** (and once at startup) that purges **only the
+  simulated layer** — rows dated on/after `Simulator:LiveSinceUtc` — and lays down a new
+  current day. Seed history (before that date) is never touched, so the dataset stays
+  fresh and bounded. Turn it off with `Simulator:Enabled=false`.
 
 ---
 
@@ -182,15 +221,24 @@ Controllers/
 Models/
   Models.cs                      response DTOs
 Services/
-  DbService.cs                   Npgsql/Dapper helper
-  SypherBiService.cs             all analytics SQL
-  DataSimulatorService.cs        hourly "live" data generator
+  DbService.cs                   provider-agnostic Dapper helper
+  IDbConnectionFactory.cs        + PostgresConnectionFactory / SnowflakeConnectionFactory
+  IAnalyticsSql.cs               + PostgresAnalyticsSql / SnowflakeAnalyticsSql (dialects)
+  SypherBiService.cs             dialect-agnostic analytics read API
+  DataSimulatorService.cs        hourly top-ups + 24h fresh rebuild (Neon only)
 Connectors/                      CRM/DMS sync layer (preview, off by default)
   IDonorSource.cs                connector contract
   Canonical.cs                   canonical donor/donation model
   ConnectorOptions.cs            bound config
   BloomerangSource.cs            Bloomerang v2 integration
   ConnectorSyncService.cs        scheduled upsert worker
+snowflake/
+  schema.sql                     Snowflake DDL
+tools/
+  neon_to_snowflake.py           Neon → Snowflake ETL loader (Python)
+  requirements.txt               loader dependencies
+assets/
+  sypher-source.js               dashboard data-source / health badge (JS)
 sypher_bi_seed_data.sql          ① schema + lookups + base rows  (run first)
 sypher_bi_big_seed.sql           ② bulk donations & calls        (run second)
 dashboard.html / index.html      static Chart.js dashboard

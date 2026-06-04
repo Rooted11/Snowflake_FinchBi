@@ -21,10 +21,9 @@ public class AnalyticsController : ControllerBase
     [HttpGet("health")]
     public async Task<IActionResult> Health()
     {
-        var version = await _db.ExecuteScalarAsync<string>("SELECT version();");
-        var connStr = _config.GetConnectionString("Neon") ?? "NOT FOUND";
-        var host = connStr.Split(';').FirstOrDefault(s => s.StartsWith("Host"))?.Split('=').LastOrDefault() ?? "unknown";
-        return Ok(new { status = "ok", postgres = version, host, utc = DateTime.UtcNow });
+        var versionSql = _db.Provider == "Snowflake" ? "SELECT CURRENT_VERSION()" : "SELECT version();";
+        var version = await _db.ExecuteScalarAsync<string>(versionSql);
+        return Ok(new { status = "ok", provider = _db.Provider, version, utc = DateTime.UtcNow });
     }
 
     [HttpGet("overview")]

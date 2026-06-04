@@ -1,24 +1,29 @@
-using Npgsql;
 using System.Data;
 using Dapper;
 
 namespace SypherBi.Api.Services;
 
+/// <summary>
+/// Thin Dapper helper over whichever warehouse <see cref="IDbConnectionFactory"/> is
+/// registered. Provider-agnostic: the SQL dialect comes from <c>IAnalyticsSql</c>.
+/// </summary>
 public class DbService
 {
-    private readonly string _connectionString;
+    private readonly IDbConnectionFactory _factory;
     private readonly ILogger<DbService> _logger;
 
-    public DbService(IConfiguration config, ILogger<DbService> logger)
+    public DbService(IDbConnectionFactory factory, ILogger<DbService> logger)
     {
-        _connectionString = config.GetConnectionString("Neon")
-            ?? throw new InvalidOperationException("Neon connection string not found.");
-        _logger = logger;
+        _factory = factory;
+        _logger  = logger;
     }
+
+    /// <summary>The active warehouse provider ("Neon" | "Snowflake").</summary>
+    public string Provider => _factory.Provider;
 
     public IDbConnection OpenConnection()
     {
-        var conn = new NpgsqlConnection(_connectionString);
+        var conn = _factory.Create();
         conn.Open();
         return conn;
     }
@@ -26,7 +31,7 @@ public class DbService
     public async Task<IEnumerable<T>> QueryAsync<T>(string sql, object? param = null)
     {
         using var conn = OpenConnection();
-        _logger.LogDebug("Query: {Sql}", sql);
+        _logger.LogDebug("Query ({Provider}): {Sql}", _factory.Provider, sql);
         return await conn.QueryAsync<T>(sql, param);
     }
 

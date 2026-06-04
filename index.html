@@ -485,6 +485,7 @@
             <span class="pill brand"><i class="ti ti-circle-filled" style="font-size:8px;vertical-align:1px;color:#0F6E56;"></i> Live</span>
             <span class="pill info">env: prod</span>
             <span class="pill" id="rowCountPill">Rows: 2,418</span>
+            <span class="pill" id="sourceBadge" title="Active data warehouse"></span>
             <button class="refresh-btn" id="refreshBtn" type="button"><i class="ti ti-refresh"></i> Refresh</button>
           </div>
         </div>
@@ -2583,6 +2584,7 @@
 
     // ── LIVE DATA SYSTEM ─────────────────────────────────────────────────
     const API='https://sypher-bi-backend.onrender.com/api/Analytics';
+    window.SYPHER_API=API;   // exposed for assets/sypher-source.js (data-source widget)
 
     // Raw cache from API
     let RAW=null;
@@ -2817,5 +2819,6 @@
   });
 })();
 </script>
+<script src="assets/sypher-source.js" defer></script>
 </body>
 </html>

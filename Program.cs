@@ -15,6 +15,19 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// ── Warehouse provider: Neon (Postgres) by default, or Snowflake ─────────────
+var dbProvider = builder.Configuration["Database:Provider"] ?? "Neon";
+if (dbProvider.Equals("Snowflake", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.AddSingleton<IDbConnectionFactory, SnowflakeConnectionFactory>();
+    builder.Services.AddSingleton<IAnalyticsSql, SnowflakeAnalyticsSql>();
+}
+else
+{
+    builder.Services.AddSingleton<IDbConnectionFactory, PostgresConnectionFactory>();
+    builder.Services.AddSingleton<IAnalyticsSql, PostgresAnalyticsSql>();
+}
+
 builder.Services.AddSingleton<DbService>();
 builder.Services.AddScoped<SypherBiService>();
 builder.Services.AddHostedService<DataSimulatorService>();
