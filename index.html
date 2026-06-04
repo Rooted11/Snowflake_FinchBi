@@ -356,6 +356,57 @@
   .footer-links span{color:var(--text-2)}
 
   .mb-12{margin-bottom:12px}.mb-14{margin-bottom:14px}
+  /* ===== VISUAL POLISH ===== */
+  .kpi-card{position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+  .kpi-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.06),transparent);pointer-events:none;border-radius:inherit}
+  .kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,110,86,.12)}
+  .kpi-card .kpi-value{background:linear-gradient(135deg,var(--text),var(--text-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+  /* Glowing accent on featured cards */
+  .kpi-card:first-child{background:linear-gradient(135deg,rgba(15,110,86,.06),rgba(29,158,117,.03))}
+  .kpi-card:first-child::before{box-shadow:0 0 0 1px rgba(15,110,86,.2)}
+
+  /* Chart cards shimmer border */
+  .panel-card{transition:box-shadow .2s}
+  .panel-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.06),0 0 0 0.5px var(--border-2)}
+
+  /* Section title glow */
+  .section-title{position:relative;display:inline-block}
+  .section-title::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--brand),transparent);border-radius:2px}
+
+  /* Status badges pop */
+  .status{font-weight:600;letter-spacing:.02em}
+  .status.completed,.status.answered{box-shadow:0 0 0 1px rgba(15,110,86,.2)}
+  .status.pending,.status.voicemail{box-shadow:0 0 0 1px rgba(186,117,23,.2)}
+  .status.failed,.status.missed{box-shadow:0 0 0 1px rgba(163,45,45,.2)}
+
+  /* Sidebar active glow */
+  .nav-item.active{box-shadow:inset 3px 0 0 var(--brand)}
+
+  /* Live dot pulse */
+  @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(29,158,117,.4)}70%{box-shadow:0 0 0 6px rgba(29,158,117,0)}100%{box-shadow:0 0 0 0 rgba(29,158,117,0)}}
+  .live-dot{animation:livePulse 2s infinite!important}
+
+  /* Table row hover glow */
+  tbody tr{transition:background .1s}
+  tbody tr:hover td:first-child{color:var(--brand)}
+
+  /* Bar fill animation */
+  .bar-fill{transition:width .6s cubic-bezier(.4,0,.2,1)!important}
+
+  /* Header gradient accent */
+  .header-bar::before{content:'';display:block;height:3px;background:linear-gradient(90deg,var(--brand),var(--brand-2),#7F77DD,#185FA5);border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin:-14px -16px 14px}
+
+  /* KPI delta pill */
+  .delta.up{background:linear-gradient(90deg,rgba(15,110,86,.12),rgba(29,158,117,.08));border:0.5px solid rgba(15,110,86,.2)}
+  .delta.down{background:linear-gradient(90deg,rgba(163,45,45,.1),rgba(163,45,45,.05));border:0.5px solid rgba(163,45,45,.2)}
+
+  /* Chip style */
+  .chip{backdrop-filter:blur(4px)}
+
+  /* Panel fade-in */
+  .panel.active{animation:panelIn .25s ease-out}
+  @keyframes panelIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
@@ -2469,114 +2520,234 @@
     // Setup featured quote navigation (once)
     setupFeaturedQuoteNav();
 
-    // ── LIVE DATA: fetch from Neon API and re-render ──────────────────────
-    (async function loadLive(){
+    // ── LIVE DATA SYSTEM ─────────────────────────────────────────────────
+    const API='https://snowflake-finchbi.onrender.com/api/Analytics';
+
+    // Raw cache from API
+    let RAW=null;
+
+    // Build a liveData object filtered by current state
+    function buildLiveData(raw,st){
+      const {ov,ds,cs,apiCamp,apiCh,apiOut,apiLead,apiMon,
+             apiDon,apiCall,apiSeg,apiLc,apiRos,apiAr,apiDaily,apiHeat}=raw;
+
+      // Apply segment filter to donations and roster
+      const segFilter = st.segment==='all' ? null : st.segment;
+      const campFilter = st.campaign==='all' ? null : st.campaign;
+      const chanFilter = st.channel==='all' ? null : st.channel;
+
+      // Build campaign-key map
+      const campKeyMap={};
+      Object.entries(CAMPAIGNS).forEach(([k,v])=>{campKeyMap[v.label]=k;});
+      const chanKeyMap={};
+      Object.entries(CHANNELS).forEach(([k,v])=>{chanKeyMap[v.label]=k;});
+
+      // Filter donations
+      let filtDon=apiDon.map((d,i)=>({
+        date:d.giftDate,sortKey:Date.now()-i*1000,daysBack:i%30,
+        donor:d.donorName,donorSeg:'mid',donorMax:500,
+        campaign:d.campaign,campaignKey:campKeyMap[d.campaign]||'spring',
+        channel:d.channel,channelKey:chanKeyMap[d.channel]||'online',
+        amount:+d.amount,status:d.status
+      }));
+      if(campFilter) filtDon=filtDon.filter(d=>d.campaignKey===campFilter||(CAMPAIGNS[campFilter]&&d.campaign===CAMPAIGNS[campFilter].label));
+      if(chanFilter) filtDon=filtDon.filter(d=>d.channelKey===chanFilter||(CHANNELS[chanFilter]&&d.channel===CHANNELS[chanFilter].label));
+
+      // Filter roster by segment
+      let filtRoster=apiRos.map(r=>({
+        name:r.name,seg:r.segmentId||'mid',first:r.firstGift,
+        gifts:+r.gifts,total:+r.total,avg:+r.avgGift,
+        lastGiftDays:30,maxGift:+r.total,lifetime:r.lifecycle,channels:[],campaigns:[]
+      }));
+      if(segFilter) filtRoster=filtRoster.filter(r=>r.seg===segFilter);
+
+      // Filter calls by caller (no segment filter, but chain filter)
+      let filtCalls=apiCall.map((c,i)=>({
+        time:c.callTime,sortKey:Date.now()-i*1000,daysBack:i%30,
+        caller:c.callerName,contact:c.contact,contactSeg:'mid',
+        duration:120,durationLabel:c.durationLabel,
+        outcome:c.outcome,pledge:+c.pledge,
+        note:c.noteText?{text:c.noteText,context:'Donor call'}:null
+      }));
+
+      // Recalculate KPIs from filtered donations
+      const completed=filtDon.filter(d=>d.status==='completed');
+      const totalRaised=completed.reduce((s,d)=>s+d.amount,0)||+ds.totalRaised;
+      const donorCount=new Set(completed.map(d=>d.donor)).size||+ds.uniqueDonors;
+      const avgGift=completed.length?Math.round(totalRaised/completed.length):+ds.avgGiftSize;
+      const mtdRaised=totalRaised*0.3;
+      const retention=72.5;
+      const callsPlaced=+cs.callsPlaced;
+      const connectRate=+cs.connectRatePct;
+      const pledgeConv=+cs.pledgeConvPct;
+      const avgDurSec=+cs.avgDurationSec;
+
+      function fmtDurL(s){s=Math.round(+s);return s>0?Math.floor(s/60)+':'+String(s%60).padStart(2,'0'):'0:00';}
+      function pD(c,p,s){const d=p?(c-p)/p*100:0;return{dir:d>=0?'up':'down',text:(d>=0?'+':'')+d.toFixed(1)+'% '+s};}
+      const cmp='vs prior period';
+      const deltas={
+        totalRaised:pD(totalRaised,totalRaised*0.85,cmp),
+        mtdRaised:pD(mtdRaised,mtdRaised*0.88,'vs prior 30d'),
+        donorCount:{dir:'up',text:'+3 '+cmp},
+        avgGift:pD(avgGift,avgGift*0.96,cmp),
+        retention:{dir:'up',text:'+1.2 pp '+cmp},
+        callsPlaced:pD(callsPlaced,callsPlaced*0.93,cmp),
+        connectRate:{dir:'up',text:'+0.8 pp '+cmp},
+        avgDuration:{dir:'up',text:'+0:24 '+cmp},
+        pledgeConv:pD(pledgeConv,pledgeConv*0.91,cmp)
+      };
+
+      // Monthly — recalculate from filtered donations
+      const monthOrder=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const monthMap={};
+      apiMon.forEach(m=>{monthMap[m.monthName]={rev:+m.revenue,gifts:+m.gifts};});
+      completed.forEach(d=>{
+        const parts=d.date?d.date.split(' '):[];
+        const mn=parts[1]||'';
+        if(mn&&monthMap[mn]!==undefined){/* already counted */}
+      });
+      // Use API monthly data recalculated by filter ratio
+      const filterRatio=filtDon.length&&apiDon.length?filtDon.length/apiDon.length:1;
+      const months=apiMon.map(m=>m.monthName);
+      const oneTime=apiMon.map(m=>Math.round(+m.revenue*filterRatio*0.62));
+      const recurring=apiMon.map(m=>Math.round(+m.revenue*filterRatio*0.28));
+      const pledges=apiMon.map(m=>Math.round(+m.revenue*filterRatio*0.22));
+
+      // Daily from apiDaily
+      const daily=apiDaily?apiDaily.map(d=>+d.Revenue||0):Array.from({length:14},()=>0);
+      const dailyAvg=daily.length?Math.round(daily.reduce((a,b)=>a+b,0)/daily.length):0;
+
+      // Channel — filter
+      let channelData=apiCh.map(c=>({key:c.channelId,label:c.label,color:c.color,pct:Math.round(+c.pctOfTotal)||1}));
+      if(chanFilter) channelData=channelData.filter(c=>c.key===chanFilter);
+
+      // Campaigns — filter
+      let filtCamp=apiCamp.map(c=>({key:c.campaignId,name:c.label,color:c.color,goal:+c.goal,raised:+c.raised}));
+      if(campFilter) filtCamp=filtCamp.filter(c=>c.key===campFilter);
+
+      // Segments — filter
+      let segments=apiSeg.map(s=>({key:s.segmentId,name:s.label,color:s.color,icon:'ti-users',donors:+s.donors,total:+s.totalRaised}));
+      if(segFilter) segments=segments.filter(s=>s.key===segFilter);
+
+      const topDonors=filtRoster.slice(0,8).map(r=>({name:r.name,amount:r.total}));
+      const placed=months.map(()=>Math.round(callsPlaced/Math.max(months.length,1)));
+      const connected=placed.map(p=>Math.round(p*connectRate/100));
+      const rateLine=placed.map(()=>Math.round(connectRate*10)/10);
+      const outcomes=apiOut.map(o=>({label:o.outcome.charAt(0).toUpperCase()+o.outcome.slice(1),pct:Math.round(+o.pct)||1,color:o.outcome==='answered'?'#1D9E75':o.outcome==='voicemail'?'#7F77DD':'#D85A30'}));
+      const callers=apiLead.map(c=>({name:c.name,role:c.role,tenure:c.tenure,calls:+c.callsPlaced,connected:+c.connected,pledges:+c.pledges,raised:+c.totalPledged,connectRate:+c.connectRatePct,convRate:+c.convRatePct,avgDur:180,avgPledge:+c.pledges?Math.round(+c.totalPledged/+c.pledges):0}));
+
+      // Hour heatmap from API
+      const connectByHour=apiHeat
+        ? Array.from({length:12},(_,i)=>{const h=apiHeat.find(x=>+x.Hour===9+i);return h?+h.Connected:0;})
+        : [28,35,42,38,31,44,48,41,36,29,22,18];
+
+      const lifecycle={};apiLc.forEach(l=>{lifecycle[l.lifecycle]=+l.count;});
+      const atRisk=apiAr.map(r=>({name:r.name,seg:r.segmentId||'mid',first:r.firstGift,daysSince:180,total:+r.lifetimeValue,lifetime:'lapsed',gifts:+r.giftCount}));
+      const rowTotal=filtDon.length+filtCalls.length+filtRoster.length;
+
+      return{
+        kpi:{totalRaised,mtdRaised,donorCount,avgGift,retention,callsPlaced,connectRate,avgDuration:fmtDurL(avgDurSec),pledgeConv},
+        deltas,months,oneTime,recurring,pledges,channelData,daily,dailyAvg,
+        campaigns:filtCamp,segments,topDonors,roster:filtRoster,placed,connected,rateLine,outcomes,callers,connectByHour,
+        hours:['9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p'],
+        donations:filtDon,calls:filtCalls,rowTotal,lifecycle,atRisk
+      };
+    }
+
+    // Override update() to use live data when available
+    const _origUpdate=update;
+    function liveUpdate(){
+      if(!RAW){_origUpdate();return;}
+      try{
+        const d=buildLiveData(RAW,state);
+        currentData=d;
+        if(state.panel==='overview')renderOverview(d);
+        else if(state.panel==='donations')renderDonations(d);
+        else if(state.panel==='calls')renderCalls(d);
+        else if(state.panel==='donors')renderDonors(d);
+        else if(state.panel==='callers')renderCallers(d);
+        else if(state.panel==='lifecycle')renderLifecycle(d);
+        else if(state.panel==='insights')renderInsights(d);
+        renderChips();
+        document.getElementById('rowCountPill').textContent='Rows: '+d.rowTotal.toLocaleString();
+        // Refresh table data bindings
+        if(tblState.donations)tblState.donations.data=d.donations;
+        if(tblState.calls)tblState.calls.data=d.calls;
+        if(tblState.roster)tblState.roster.data=d.roster;
+      }catch(err){console.error('liveUpdate error:',err);}
+    }
+
+    // Patch the refresh button to re-fetch
+    document.getElementById('refreshBtn').addEventListener('click',async e=>{
+      const btn=e.currentTarget;
+      btn.classList.add('spinning');
+      await loadLive();
+      setTimeout(()=>btn.classList.remove('spinning'),600);
+    },{capture:true});
+
+    async function loadLive(){
       const API='https://snowflake-finchbi.onrender.com/api/Analytics';
+      try{
       try{
         const [ovR,donSumR,monthlyR,campaignsR,channelsR,donListR,
                callSumR,outcomesR,leaderboardR,callListR,
-               segmentsR,lifecycleR,rosterR,atRiskR]=await Promise.all([
+               segmentsR,lifecycleR,rosterR,atRiskR,dailyR,heatR]=await Promise.all([
           fetch(API+'/overview').then(r=>r.json()),
           fetch(API+'/donations/summary').then(r=>r.json()),
           fetch(API+'/donations/monthly').then(r=>r.json()),
           fetch(API+'/donations/campaigns').then(r=>r.json()),
           fetch(API+'/donations/channels').then(r=>r.json()),
-          fetch(API+'/donations/list?limit=200').then(r=>r.json()),
+          fetch(API+'/donations/list?limit=500').then(r=>r.json()),
           fetch(API+'/calls/summary').then(r=>r.json()),
           fetch(API+'/calls/outcomes').then(r=>r.json()),
           fetch(API+'/calls/leaderboard').then(r=>r.json()),
-          fetch(API+'/calls/list?limit=200').then(r=>r.json()),
+          fetch(API+'/calls/list?limit=500').then(r=>r.json()),
           fetch(API+'/donors/segments').then(r=>r.json()),
           fetch(API+'/donors/lifecycle').then(r=>r.json()),
           fetch(API+'/donors/roster').then(r=>r.json()),
           fetch(API+'/donors/at-risk').then(r=>r.json()),
+          fetch(API+'/donations/daily').then(r=>r.json()).catch(()=>({data:[]})),
+          fetch(API+'/calls/heatmap').then(r=>r.json()).catch(()=>({data:[]})),
         ]);
-        const ov=ovR.data,ds=donSumR.data,cs=callSumR.data;
-        const apiCamp=campaignsR.data,apiCh=channelsR.data;
-        const apiOut=outcomesR.data,apiLead=leaderboardR.data;
-        const apiMon=monthlyR.data,apiDon=donListR.data;
-        const apiCall=callListR.data,apiSeg=segmentsR.data;
-        const apiLc=lifecycleR.data,apiRos=rosterR.data,apiAr=atRiskR.data;
 
-        function fmtDurL(s){s=Math.round(+s);return s>0?Math.floor(s/60)+':'+String(s%60).padStart(2,'0'):'0:00';}
-        const totalRaised=+ds.totalRaised,donorCount=+ds.uniqueDonors;
-        const avgGift=+ds.avgGiftSize,mtdRaised=totalRaised*0.3;
-        const retention=72.5,callsPlaced=+cs.callsPlaced;
-        const connectRate=+cs.connectRatePct,pledgeConv=+cs.pledgeConvPct;
-        const avgDurSec=+cs.avgDurationSec;
-        function pD(c,p,s){const d=p?(c-p)/p*100:0;return{dir:d>=0?'up':'down',text:(d>=0?'+':'')+d.toFixed(1)+'% '+s};}
-        const cmp='vs prior period';
-        const deltas={
-          totalRaised:pD(totalRaised,totalRaised*0.85,cmp),
-          mtdRaised:pD(mtdRaised,mtdRaised*0.88,'vs prior 30d'),
-          donorCount:{dir:'up',text:'+3 '+cmp},
-          avgGift:pD(avgGift,avgGift*0.96,cmp),
-          retention:{dir:'up',text:'+1.2 pp '+cmp},
-          callsPlaced:pD(callsPlaced,callsPlaced*0.93,cmp),
-          connectRate:{dir:'up',text:'+0.8 pp '+cmp},
-          avgDuration:{dir:'up',text:'+0:24 '+cmp},
-          pledgeConv:pD(pledgeConv,pledgeConv*0.91,cmp)
+        RAW={
+          ov:ovR.data, ds:donSumR.data, cs:callSumR.data,
+          apiCamp:campaignsR.data, apiCh:channelsR.data,
+          apiOut:outcomesR.data, apiLead:leaderboardR.data,
+          apiMon:monthlyR.data, apiDon:donListR.data,
+          apiCall:callListR.data, apiSeg:segmentsR.data,
+          apiLc:lifecycleR.data, apiRos:rosterR.data, apiAr:atRiskR.data,
+          apiDaily:dailyR.data, apiHeat:heatR.data
         };
-        const months=apiMon.map(m=>m.monthName);
-        const oneTime=apiMon.map(m=>Math.round(+m.revenue*0.62));
-        const recurring=apiMon.map(m=>Math.round(+m.revenue*0.28));
-        const pledges=apiMon.map(m=>Math.round(+m.revenue*0.22));
-        const channelData=apiCh.map(c=>({key:c.channelId,label:c.label,color:c.color,pct:Math.round(+c.pctOfTotal)||1}));
-        const daily=Array.from({length:14},()=>0);
-        const dailyAvg=Math.round(totalRaised/14);
-        const campaigns=apiCamp.map(c=>({key:c.campaignId,name:c.label,color:c.color,goal:+c.goal,raised:+c.raised}));
-        const segments=apiSeg.map(s=>({key:s.segmentId,name:s.label,color:s.color,icon:'ti-users',donors:+s.donors,total:+s.totalRaised}));
-        const topDonors=apiRos.slice(0,8).map(r=>({name:r.name,amount:+r.total}));
-        const roster=apiRos.map(r=>({name:r.name,seg:r.segmentId||'mid',first:r.firstGift,gifts:+r.gifts,total:+r.total,avg:+r.avgGift,lastGiftDays:30,maxGift:+r.total,lifetime:r.lifecycle,channels:[],campaigns:[]}));
-        const placed=months.map(()=>Math.round(callsPlaced/Math.max(months.length,1)));
-        const connected=placed.map(p=>Math.round(p*connectRate/100));
-        const rateLine=placed.map(()=>Math.round(connectRate*10)/10);
-        const outcomes=apiOut.map(o=>({label:o.outcome.charAt(0).toUpperCase()+o.outcome.slice(1),pct:Math.round(+o.pct)||1,color:o.outcome==='answered'?'#1D9E75':o.outcome==='voicemail'?'#7F77DD':'#D85A30'}));
-        const callers=apiLead.map(c=>({name:c.name,role:c.role,tenure:c.tenure,calls:+c.callsPlaced,connected:+c.connected,pledges:+c.pledges,raised:+c.totalPledged,connectRate:+c.connectRatePct,convRate:+c.convRatePct,avgDur:180,avgPledge:+c.pledges?Math.round(+c.totalPledged/+c.pledges):0}));
-        const connectByHour=[28,35,42,38,31,44,48,41,36,29,22,18];
-        const lifecycle={};apiLc.forEach(l=>{lifecycle[l.lifecycle]=+l.count;});
-        const atRisk=apiAr.map(r=>({name:r.name,seg:r.segmentId||'mid',first:r.firstGift,daysSince:180,total:+r.lifetimeValue,lifetime:'lapsed',gifts:+r.giftCount}));
-        const donations=apiDon.map((d,i)=>({
-          date:d.giftDate,sortKey:Date.now()-i*1000,daysBack:i%30,
-          donor:d.donorName,donorSeg:'mid',donorMax:500,
-          campaign:d.campaign,campaignKey:Object.keys(CAMPAIGNS).find(k=>CAMPAIGNS[k].label===d.campaign)||'spring',
-          channel:d.channel,channelKey:Object.keys(CHANNELS).find(k=>CHANNELS[k].label===d.channel)||'online',
-          amount:+d.amount,status:d.status
-        }));
-        const calls=apiCall.map((c,i)=>({
-          time:c.callTime,sortKey:Date.now()-i*1000,daysBack:i%30,
-          caller:c.callerName,contact:c.contact,contactSeg:'mid',
-          duration:120,durationLabel:c.durationLabel,
-          outcome:c.outcome,pledge:+c.pledge,
-          note:c.noteText?{text:c.noteText,context:'Donor call'}:null
-        }));
-        const rowTotal=donations.length+calls.length+roster.length;
-        const liveData={
-          kpi:{totalRaised,mtdRaised,donorCount,avgGift,retention,callsPlaced,connectRate,avgDuration:fmtDurL(avgDurSec),pledgeConv},
-          deltas,months,oneTime,recurring,pledges,channelData,daily,dailyAvg,
-          campaigns,segments,topDonors,roster,placed,connected,rateLine,outcomes,callers,connectByHour,
-          hours:['9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p'],
-          donations,calls,rowTotal,lifecycle,atRisk
-        };
-        currentData=liveData;
-        // Update the refresh label
+
+        // Update refresh label
         const now=new Date();
         const time=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
-        document.getElementById('refreshLabel').textContent='Live · Neon DB · Refreshed '+now.getDate()+' Jun 2026 '+time+' MT';
-        // Re-render current panel with live data
-        const p=state.panel;
-        if(p==='overview')renderOverview(liveData);
-        else if(p==='donations')renderDonations(liveData);
-        else if(p==='calls')renderCalls(liveData);
-        else if(p==='donors')renderDonors(liveData);
-        else if(p==='callers')renderCallers(liveData);
-        else if(p==='lifecycle')renderLifecycle(liveData);
-        else if(p==='insights')renderInsights(liveData);
-        document.getElementById('rowCountPill').textContent='Rows: '+rowTotal.toLocaleString();
-        // Also override buildData so refresh button uses live data
-        window.__liveData=liveData;
+        document.getElementById('refreshLabel').textContent='Live · Neon DB · '+now.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+time;
+
+        // Wire all filter/segment changes to liveUpdate
+        ['f-range','f-campaign','f-channel','f-segment'].forEach(id=>{
+          const el=document.getElementById(id);
+          if(el){
+            el.addEventListener('change',liveUpdate,{capture:true});
+            el.addEventListener('input',liveUpdate,{capture:true});
+          }
+        });
+
+        // Render with live data
+        liveUpdate();
+
+        // Wire table export buttons to API CSV endpoints
+        const donExp=document.getElementById('donExportBtn');
+        if(donExp) donExp.addEventListener('click',e=>{e.stopImmediatePropagation();window.open(API+'/donations/export','_blank');},{capture:true});
+        const callExp=document.getElementById('callExportBtn');
+        if(callExp) callExp.addEventListener('click',e=>{e.stopImmediatePropagation();window.open(API+'/calls/export','_blank');},{capture:true});
+
       }catch(e){console.error('Live data load failed:',e);}
-    })();
+    }
+
+    // Kick off initial live load
+    loadLive();
 
     // Bind table controls once
     bindTableControls({key:'donations',tableId:'donTable',bodyId:'donTableBody',pagerId:'donPager',searchId:'donSearch',pageSizeId:'donPageSize',exportId:'donExportBtn',countId:'donCountSub',
