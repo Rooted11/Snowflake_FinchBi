@@ -1,6 +1,6 @@
 -- =============================================================
---  Finch BI — Big Seed  (500+ donations, 300+ calls)
---  Run AFTER finch_bi_seed_data.sql (adds to existing tables)
+--  Sypher BI — Big Seed  (500+ donations, 300+ calls)
+--  Run AFTER sypher_bi_seed_data.sql (adds to existing tables)
 --  Reference date: 03 Jun 2026
 -- =============================================================
 

@@ -1,4 +1,4 @@
-namespace FinchBi.Api.Models;
+namespace SypherBi.Api.Models;
 
 // Overview
 public class OverviewSummary
@@ -50,6 +50,7 @@ public class DonationRow
 {
     public string  GiftDate  { get; set; } = "";
     public string  DonorName { get; set; } = "";
+    public string  SegmentId { get; set; } = "";
     public string  Campaign  { get; set; } = "";
     public string  Channel   { get; set; } = "";
     public decimal Amount    { get; set; }
@@ -134,6 +135,40 @@ public class AtRiskDonor
     public string  FirstGift     { get; set; } = "";
     public decimal LifetimeValue { get; set; }
     public int     GiftCount     { get; set; }
+}
+
+// Trends & heatmap (previously returned as dynamic)
+public class MonthlyTrendPoint
+{
+    public int     Month     { get; set; }
+    public string  MonthName { get; set; } = "";
+    public decimal OneTime   { get; set; }
+    public decimal Recurring { get; set; }
+    public decimal Pledges   { get; set; }
+}
+
+public class MonthlyCallsPoint
+{
+    public int     Month       { get; set; }
+    public string  MonthName   { get; set; } = "";
+    public int     Placed      { get; set; }
+    public int     Connected   { get; set; }
+    public decimal ConnectRate { get; set; }
+}
+
+public class DailyTrendPoint
+{
+    public DateTime Date    { get; set; }
+    public decimal  Revenue { get; set; }
+    public int      Gifts   { get; set; }
+}
+
+public class HourHeatmapPoint
+{
+    public int     Hour        { get; set; }
+    public int     Total       { get; set; }
+    public int     Connected   { get; set; }
+    public decimal ConnectRate { get; set; }
 }
 
 // Shared wrapper

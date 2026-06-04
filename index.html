@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0F6E56" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="format-detection" content="telephone=no" />
-<title>Finch BI · Donations &amp; Calls</title>
+<title>Sypher BI · Donations &amp; Calls</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.5.0/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -417,6 +417,28 @@
 
   /* Chart tooltips sharper */
   .chartjs-tooltip{border-radius:8px!important;font-size:12px!important}
+
+  /* ===== GLOW-UP (tier 2) ===== */
+  /* KPI entrance + corner glow + count-up-ready numbers */
+  .kpi-enter{animation:kpiEnter .5s cubic-bezier(.22,1,.36,1) both}
+  @keyframes kpiEnter{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+  .kpi{position:relative;overflow:hidden;will-change:transform}
+  .kpi::after{content:'';position:absolute;right:-28px;top:-28px;width:92px;height:92px;border-radius:50%;background:radial-gradient(circle,rgba(29,158,117,.12),transparent 70%);pointer-events:none}
+  .kpi-value{font-size:26px!important;min-height:1em}
+  /* Gradient KPI numbers — only where text-clip is supported, so they never vanish */
+  @supports ((-webkit-background-clip:text) or (background-clip:text)){
+    .kpi-value{background:linear-gradient(135deg,var(--text) 0%,var(--brand) 165%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+    @media (prefers-color-scheme: dark){
+      .kpi-value{background:linear-gradient(135deg,#ffffff 0%,var(--brand-2) 175%)}
+    }
+  }
+  /* Brand marks get a soft branded glow */
+  .brand-icon{box-shadow:0 4px 14px rgba(15,110,86,.35),inset 0 1px 0 rgba(255,255,255,.25)!important}
+  .card-title{font-weight:650!important}
+  /* Respect reduced-motion across all the new motion */
+  @media (prefers-reduced-motion: reduce){
+    .kpi-enter,.panel.active,.bar-fill::after{animation:none!important}
+  }
 </style>
 </head>
 <body>
@@ -428,7 +450,7 @@
     <div class="sidebar-brand">
       <div class="brand-icon"><i class="ti ti-heart-handshake"></i></div>
       <div>
-        <div class="brand-title">Finch BI</div>
+        <div class="brand-title">Sypher BI</div>
         <div class="brand-sub">Nassen Solutions</div>
       </div>
     </div>
@@ -441,7 +463,7 @@
     <button class="nav-item" data-panel="lifecycle" type="button"><i class="ti ti-arrows-shuffle"></i> Lifecycle</button>
     <button class="nav-item" data-panel="insights" type="button"><i class="ti ti-sparkles"></i> Insights</button>
     <div class="sidebar-footer">
-      <div>Finch BI v1.6.0</div>
+      <div>Sypher BI v1.6.0</div>
       <div>build 2026.05.26</div>
     </div>
   </aside>
@@ -826,7 +848,7 @@
       </div>
 
       <div class="footer">
-        <div class="footer-left"><div class="brand-icon"><i class="ti ti-leaf"></i></div><div><div style="color:var(--text);font-weight:500;">Finch BI</div><div>© 2026 Nassen Solutions</div></div></div>
+        <div class="footer-left"><div class="brand-icon"><i class="ti ti-leaf"></i></div><div><div style="color:var(--text);font-weight:500;">Sypher BI</div><div>© 2026 Nassen Solutions</div></div></div>
         <div class="footer-links"><span>Docs</span><span>API</span><span>Privacy</span><span>Status</span></div>
         <div class="footer-right">build 2026.05.26 · v1.6.0</div>
       </div>
@@ -1563,19 +1585,36 @@
     {key:'pledgeConv',label:()=>'Pledge conversion',fmt:v=>v.toFixed(1)+'%',delta:d=>d.deltas.pledgeConv}
   ];
 
+  // Animate a numeric KPI from 0 → target, re-formatting each frame. Falls back to
+  // a direct set for non-numeric values (e.g. "4:32" durations) and reduced-motion.
+  function countUp(el,target,fmt){
+    const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(typeof target!=='number'||!isFinite(target)||reduce){el.textContent=fmt(target);return;}
+    const dur=850,t0=performance.now();
+    function step(now){
+      const p=Math.min(1,(now-t0)/dur);
+      const eased=1-Math.pow(1-p,3);            // easeOutCubic
+      el.textContent=fmt(target*eased);
+      if(p<1)requestAnimationFrame(step); else el.textContent=fmt(target);
+    }
+    requestAnimationFrame(step);
+  }
+
   function renderKPISet(boxId,defs,d){
     const box=document.getElementById(boxId);
     if(!box)return;
     box.innerHTML='';
-    defs.forEach(def=>{
+    defs.forEach((def,i)=>{
       const val=d.kpi[def.key];
       const dlt=def.delta(d);
       const cls=dlt.dir==='up'?'delta-up':dlt.dir==='warn'?'delta-warn':'delta-down';
       const icon=dlt.dir==='up'?'ti-trending-up':dlt.dir==='warn'?'ti-minus':'ti-trending-down';
       const div=document.createElement('div');
-      div.className='kpi';
-      div.innerHTML='<div class="kpi-label">'+def.label()+'</div><div class="kpi-value">'+def.fmt(val)+'</div><div class="kpi-delta '+cls+'"><i class="ti '+icon+'"></i> '+dlt.text+'</div>';
+      div.className='kpi kpi-enter';
+      div.style.animationDelay=(i*60)+'ms';
+      div.innerHTML='<div class="kpi-label">'+def.label()+'</div><div class="kpi-value"></div><div class="kpi-delta '+cls+'"><i class="ti '+icon+'"></i> '+dlt.text+'</div>';
       box.appendChild(div);
+      countUp(div.querySelector('.kpi-value'),val,def.fmt);
     });
   }
 
@@ -1762,7 +1801,7 @@
     const blob=new Blob([csvRows.join('\n')],{type:'text/csv'});
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
-    a.href=url;a.download='finch_'+opts.key+'_'+Date.now()+'.csv';
+    a.href=url;a.download='sypher_'+opts.key+'_'+Date.now()+'.csv';
     document.body.appendChild(a);a.click();document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
@@ -2564,14 +2603,15 @@
       const chanKeyMap={};
       Object.entries(CHANNELS).forEach(([k,v])=>{chanKeyMap[v.label]=k;});
 
-      // Filter donations
+      // Filter donations — segment, campaign and channel all drive the dataset
       let filtDon=apiDon.map((d,i)=>({
         date:d.giftDate,sortKey:Date.now()-i*1000,daysBack:i%30,
-        donor:d.donorName,donorSeg:'mid',donorMax:500,
+        donor:d.donorName,donorSeg:d.segmentId||'mid',donorMax:500,
         campaign:d.campaign,campaignKey:campKeyMap[d.campaign]||'spring',
         channel:d.channel,channelKey:chanKeyMap[d.channel]||'online',
         amount:+d.amount,status:d.status
       }));
+      if(segFilter)  filtDon=filtDon.filter(d=>d.donorSeg===segFilter);
       if(campFilter) filtDon=filtDon.filter(d=>d.campaignKey===campFilter||(CAMPAIGNS[campFilter]&&d.campaign===CAMPAIGNS[campFilter].label));
       if(chanFilter) filtDon=filtDon.filter(d=>d.channelKey===chanFilter||(CHANNELS[chanFilter]&&d.channel===CHANNELS[chanFilter].label));
 
@@ -2619,33 +2659,44 @@
         pledgeConv:pD(pledgeConv,pledgeConv*0.91,cmp)
       };
 
-      // Monthly — recalculate from filtered donations
-      const monthOrder=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      const monthMap={};
-      apiMon.forEach(m=>{monthMap[m.monthName]={rev:+m.revenue,gifts:+m.gifts};});
-      completed.forEach(d=>{
-        const parts=d.date?d.date.split(' '):[];
-        const mn=parts[1]||'';
-        if(mn&&monthMap[mn]!==undefined){/* already counted */}
-      });
-      // Use API monthly data recalculated by filter ratio
-      const filterRatio=filtDon.length&&apiDon.length?filtDon.length/apiDon.length:1;
+      // Monthly — recompute directly from the filtered donations so every filter
+      // (segment/campaign/channel) is reflected, splitting recurring vs one-time.
       const months=apiMon.map(m=>m.monthName);
-      const oneTime=apiMon.map(m=>Math.round(+m.revenue*filterRatio*0.62));
-      const recurring=apiMon.map(m=>Math.round(+m.revenue*filterRatio*0.28));
-      const pledges=apiMon.map(m=>Math.round(+m.revenue*filterRatio*0.22));
+      const moOne={},moRec={};
+      completed.forEach(d=>{
+        const mn=(d.date||'').split(' ')[1]||'';
+        if(!mn)return;
+        if(d.donorSeg==='recurring') moRec[mn]=(moRec[mn]||0)+d.amount;
+        else                         moOne[mn]=(moOne[mn]||0)+d.amount;
+      });
+      const oneTime=months.map(m=>Math.round(moOne[m]||0));
+      const recurring=months.map(m=>Math.round(moRec[m]||0));
+      const pledges=months.map((m,i)=>Math.round((oneTime[i]+recurring[i])*0.22));
 
-      // Daily from apiDaily
-      const daily=apiDaily?apiDaily.map(d=>+d.Revenue||0):Array.from({length:14},()=>0);
+      // Daily from apiDaily (typed: camelCase keys)
+      const daily=apiDaily?apiDaily.map(d=>+d.revenue||0):Array.from({length:14},()=>0);
       const dailyAvg=daily.length?Math.round(daily.reduce((a,b)=>a+b,0)/daily.length):0;
 
-      // Channel — filter
-      let channelData=apiCh.map(c=>({key:c.channelId,label:c.label,color:c.color,pct:Math.round(+c.pctOfTotal)||1}));
-      if(chanFilter) channelData=channelData.filter(c=>c.key===chanFilter);
+      // Channel — recompute share from the filtered donations so all filters apply
+      const chTotals={};
+      completed.forEach(d=>{chTotals[d.channelKey]=(chTotals[d.channelKey]||0)+d.amount;});
+      const chSum=Object.values(chTotals).reduce((a,b)=>a+b,0)||1;
+      let channelData=apiCh
+        .map(c=>({key:c.channelId,label:c.label,color:c.color,rev:chTotals[c.channelId]||0}))
+        .filter(c=>c.rev>0)
+        .map(c=>({key:c.key,label:c.label,color:c.color,pct:Math.max(1,Math.round(c.rev*100/chSum))}));
+      if(!channelData.length)
+        channelData=apiCh.map(c=>({key:c.channelId,label:c.label,color:c.color,pct:Math.round(+c.pctOfTotal)||1}));
 
-      // Campaigns — filter
-      let filtCamp=apiCamp.map(c=>({key:c.campaignId,name:c.label,color:c.color,goal:+c.goal,raised:+c.raised}));
+      // Campaigns — recompute raised from filtered donations, keep goals from API
+      const campTotals={};
+      completed.forEach(d=>{campTotals[d.campaignKey]=(campTotals[d.campaignKey]||0)+d.amount;});
+      let filtCamp=apiCamp
+        .map(c=>({key:c.campaignId,name:c.label,color:c.color,goal:+c.goal,raised:campTotals[c.campaignId]||0}))
+        .filter(c=>c.raised>0);
       if(campFilter) filtCamp=filtCamp.filter(c=>c.key===campFilter);
+      if(!filtCamp.length)
+        filtCamp=apiCamp.map(c=>({key:c.campaignId,name:c.label,color:c.color,goal:+c.goal,raised:+c.raised}));
 
       // Segments — filter
       let segments=apiSeg.map(s=>({key:s.segmentId,name:s.label,color:s.color,icon:'ti-users',donors:+s.donors,total:+s.totalRaised}));
@@ -2660,7 +2711,7 @@
 
       // Hour heatmap from API
       const connectByHour=apiHeat
-        ? Array.from({length:12},(_,i)=>{const h=apiHeat.find(x=>+x.Hour===9+i);return h?+h.Connected:0;})
+        ? Array.from({length:12},(_,i)=>{const h=apiHeat.find(x=>+x.hour===9+i);return h?+h.connected:0;})
         : [28,35,42,38,31,44,48,41,36,29,22,18];
 
       const lifecycle={};apiLc.forEach(l=>{lifecycle[l.lifecycle]=+l.count;});

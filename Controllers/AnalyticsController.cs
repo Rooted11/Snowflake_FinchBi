@@ -1,19 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
-using FinchBi.Api.Models;
-using FinchBi.Api.Services;
+using SypherBi.Api.Models;
+using SypherBi.Api.Services;
 
-namespace FinchBi.Api.Controllers;
+namespace SypherBi.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class AnalyticsController : ControllerBase
 {
-    private readonly FinchBiService _svc;
+    private readonly SypherBiService _svc;
     private readonly DbService      _db;
     private readonly IConfiguration _config;
 
-    public AnalyticsController(FinchBiService svc, DbService db, IConfiguration config)
+    public AnalyticsController(SypherBiService svc, DbService db, IConfiguration config)
     {
         _svc = svc; _db = db; _config = config;
     }
@@ -22,7 +22,7 @@ public class AnalyticsController : ControllerBase
     public async Task<IActionResult> Health()
     {
         var version = await _db.ExecuteScalarAsync<string>("SELECT version();");
-        var connStr = _config.GetConnectionString("Supabase") ?? "NOT FOUND";
+        var connStr = _config.GetConnectionString("Neon") ?? "NOT FOUND";
         var host = connStr.Split(';').FirstOrDefault(s => s.StartsWith("Host"))?.Split('=').LastOrDefault() ?? "unknown";
         return Ok(new { status = "ok", postgres = version, host, utc = DateTime.UtcNow });
     }
@@ -41,7 +41,7 @@ public class AnalyticsController : ControllerBase
 
     [HttpGet("donations/trend")]
     public async Task<IActionResult> GetMonthlyTrend()
-        => Ok(new ApiResponse<IEnumerable<dynamic>> { Data = await _svc.GetMonthlyTrendAsync() });
+        => Ok(new ApiResponse<IEnumerable<MonthlyTrendPoint>> { Data = await _svc.GetMonthlyTrendAsync() });
 
     [HttpGet("donations/campaigns")]
     public async Task<IActionResult> GetCampaigns()
@@ -73,7 +73,7 @@ public class AnalyticsController : ControllerBase
 
     [HttpGet("calls/monthly")]
     public async Task<IActionResult> GetMonthlyCalls()
-        => Ok(new ApiResponse<IEnumerable<dynamic>> { Data = await _svc.GetMonthlyCallsAsync() });
+        => Ok(new ApiResponse<IEnumerable<MonthlyCallsPoint>> { Data = await _svc.GetMonthlyCallsAsync() });
 
     [HttpGet("donors/segments")]
     public async Task<IActionResult> GetDonorSegments()
@@ -90,21 +90,20 @@ public class AnalyticsController : ControllerBase
     [HttpGet("donors/at-risk")]
     public async Task<IActionResult> GetAtRiskDonors()
         => Ok(new ApiResponse<IEnumerable<AtRiskDonor>> { Data = await _svc.GetAtRiskDonorsAsync() });
-}
 
-    // Extra endpoints
+    // ── Extra endpoints ─────────────────────────────────────────────────────────
     [HttpGet("donations/daily")]
     public async Task<IActionResult> GetDailyTrend()
     {
         var data = await _svc.GetDailyTrendAsync();
-        return Ok(new ApiResponse<IEnumerable<dynamic>> { Data = data });
+        return Ok(new ApiResponse<IEnumerable<DailyTrendPoint>> { Data = data });
     }
 
     [HttpGet("calls/heatmap")]
     public async Task<IActionResult> GetHourHeatmap()
     {
         var data = await _svc.GetHourHeatmapAsync();
-        return Ok(new ApiResponse<IEnumerable<dynamic>> { Data = data });
+        return Ok(new ApiResponse<IEnumerable<HourHeatmapPoint>> { Data = data });
     }
 
     [HttpGet("donations/export")]

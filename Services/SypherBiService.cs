@@ -1,12 +1,12 @@
-using FinchBi.Api.Models;
+using SypherBi.Api.Models;
 using Dapper;
 
-namespace FinchBi.Api.Services;
+namespace SypherBi.Api.Services;
 
-public class FinchBiService
+public class SypherBiService
 {
     private readonly DbService _db;
-    public FinchBiService(DbService db) => _db = db;
+    public SypherBiService(DbService db) => _db = db;
 
     // ── Overview ──────────────────────────────────────────────────────────────
     public async Task<OverviewSummary> GetOverviewAsync()
@@ -98,11 +98,13 @@ public class FinchBiService
             SELECT
                 TO_CHAR(d.gift_date, 'DD Mon')  AS ""GiftDate"",
                 d.donor_name                    AS ""DonorName"",
+                dn.segment_id                   AS ""SegmentId"",
                 c.label                         AS ""Campaign"",
                 ch.label                        AS ""Channel"",
                 d.amount                        AS ""Amount"",
                 d.status                        AS ""Status""
             FROM donations d
+            JOIN donors    dn ON dn.name = d.donor_name
             JOIN campaigns c  ON c.id  = d.campaign_id
             JOIN channels  ch ON ch.id = d.channel_id
             ORDER BY d.gift_date DESC
@@ -257,27 +259,26 @@ public class FinchBiService
             ORDER BY ""LifetimeValue"" DESC;";
         return await _db.QueryAsync<AtRiskDonor>(sql);
     }
-}
 
     // ── Monthly trend (one-time vs recurring split + monthly placed/connected) ──
-    public async Task<IEnumerable<dynamic>> GetMonthlyTrendAsync()
+    public async Task<IEnumerable<MonthlyTrendPoint>> GetMonthlyTrendAsync()
     {
         const string sql = @"
             SELECT
                 EXTRACT(MONTH FROM gift_date)::int          AS ""Month"",
                 TO_CHAR(gift_date, 'Mon')                   AS ""MonthName"",
-                COALESCE(SUM(amount) FILTER (WHERE segment_id != 'recurring'), 0) AS ""OneTime"",
-                COALESCE(SUM(amount) FILTER (WHERE segment_id  = 'recurring'), 0) AS ""Recurring"",
+                COALESCE(SUM(amount) FILTER (WHERE dn.segment_id != 'recurring'), 0) AS ""OneTime"",
+                COALESCE(SUM(amount) FILTER (WHERE dn.segment_id  = 'recurring'), 0) AS ""Recurring"",
                 COALESCE(SUM(amount) * 0.22, 0)             AS ""Pledges""
             FROM donations d
             JOIN donors dn ON dn.name = d.donor_name
             WHERE d.status = 'completed'
             GROUP BY EXTRACT(MONTH FROM gift_date), TO_CHAR(gift_date, 'Mon')
             ORDER BY ""Month"";";
-        return await _db.QueryAsync<dynamic>(sql);
+        return await _db.QueryAsync<MonthlyTrendPoint>(sql);
     }
 
-    public async Task<IEnumerable<dynamic>> GetMonthlyCallsAsync()
+    public async Task<IEnumerable<MonthlyCallsPoint>> GetMonthlyCallsAsync()
     {
         const string sql = @"
             SELECT
@@ -290,11 +291,11 @@ public class FinchBiService
             FROM calls
             GROUP BY EXTRACT(MONTH FROM call_time), TO_CHAR(call_time, 'Mon')
             ORDER BY ""Month"";";
-        return await _db.QueryAsync<dynamic>(sql);
+        return await _db.QueryAsync<MonthlyCallsPoint>(sql);
     }
 
     // ── Daily trend (last 30 days) ─────────────────────────────────────────
-    public async Task<IEnumerable<dynamic>> GetDailyTrendAsync()
+    public async Task<IEnumerable<DailyTrendPoint>> GetDailyTrendAsync()
     {
         const string sql = @"
             SELECT
@@ -306,11 +307,11 @@ public class FinchBiService
               AND gift_date >= CURRENT_DATE - INTERVAL '30 days'
             GROUP BY gift_date
             ORDER BY gift_date;";
-        return await _db.QueryAsync<dynamic>(sql);
+        return await _db.QueryAsync<DailyTrendPoint>(sql);
     }
 
     // ── Hour heatmap ──────────────────────────────────────────────────────
-    public async Task<IEnumerable<dynamic>> GetHourHeatmapAsync()
+    public async Task<IEnumerable<HourHeatmapPoint>> GetHourHeatmapAsync()
     {
         const string sql = @"
             SELECT
@@ -323,7 +324,7 @@ public class FinchBiService
             FROM calls
             GROUP BY EXTRACT(HOUR FROM call_time)
             ORDER BY ""Hour"";";
-        return await _db.QueryAsync<dynamic>(sql);
+        return await _db.QueryAsync<HourHeatmapPoint>(sql);
     }
 
     // ── CSV export data ───────────────────────────────────────────────────
@@ -363,3 +364,4 @@ public class FinchBiService
             ORDER BY call_time DESC;";
         return await _db.QueryAsync<CallRow>(sql);
     }
+}

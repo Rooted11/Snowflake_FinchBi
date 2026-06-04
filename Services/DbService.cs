@@ -2,7 +2,7 @@ using Npgsql;
 using System.Data;
 using Dapper;
 
-namespace FinchBi.Api.Services;
+namespace SypherBi.Api.Services;
 
 public class DbService
 {
@@ -11,8 +11,8 @@ public class DbService
 
     public DbService(IConfiguration config, ILogger<DbService> logger)
     {
-        _connectionString = config.GetConnectionString("Supabase")
-            ?? throw new InvalidOperationException("Supabase connection string not found.");
+        _connectionString = config.GetConnectionString("Neon")
+            ?? throw new InvalidOperationException("Neon connection string not found.");
         _logger = logger;
     }
 

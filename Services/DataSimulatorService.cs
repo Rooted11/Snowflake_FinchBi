@@ -1,6 +1,6 @@
 using Dapper;
 
-namespace FinchBi.Api.Services;
+namespace SypherBi.Api.Services;
 
 public class DataSimulatorService : BackgroundService
 {

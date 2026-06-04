@@ -1,6 +1,6 @@
 -- =============================================================
---  Finch BI — Seed Data
---  Matches the data model in _RNPVKJC.html exactly.
+--  Sypher BI — Seed Data
+--  Matches the data model in the dashboard exactly.
 --  Reference date: 26 May 2026 (the dashboard's "today").
 --  Run these in order: schema → lookups → core tables → indexes.
 -- =============================================================
