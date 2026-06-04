@@ -357,56 +357,66 @@
 
   .mb-12{margin-bottom:12px}.mb-14{margin-bottom:14px}
   /* ===== VISUAL POLISH ===== */
-  .kpi-card{position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
-  .kpi-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.06),transparent);pointer-events:none;border-radius:inherit}
-  .kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,110,86,.12)}
-  .kpi-card .kpi-value{background:linear-gradient(135deg,var(--text),var(--text-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 
-  /* Glowing accent on featured cards */
-  .kpi-card:first-child{background:linear-gradient(135deg,rgba(15,110,86,.06),rgba(29,158,117,.03))}
-  .kpi-card:first-child::before{box-shadow:0 0 0 1px rgba(15,110,86,.2)}
+  /* KPI cards — gradient background + glow hover */
+  .kpi{background:linear-gradient(135deg,var(--surface) 60%,rgba(15,110,86,.03));transition:transform .2s,box-shadow .2s}
+  .kpi:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(15,110,86,.1),0 2px 8px rgba(0,0,0,.06)}
+  .kpi::before{background:linear-gradient(90deg,var(--brand),var(--brand-2),#7F77DD)!important;opacity:1!important;height:3px!important}
+  .kpi-value{letter-spacing:-.03em!important}
 
-  /* Chart cards shimmer border */
-  .panel-card{transition:box-shadow .2s}
-  .panel-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.06),0 0 0 0.5px var(--border-2)}
+  /* Cards — richer hover */
+  .card{transition:box-shadow .2s,transform .15s}
+  .card:hover{box-shadow:0 8px 28px rgba(0,0,0,.07),0 0 0 0.5px var(--border-2)!important;transform:translateY(-1px)}
 
-  /* Section title glow */
-  .section-title{position:relative;display:inline-block}
-  .section-title::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--brand),transparent);border-radius:2px}
+  /* Section titles with accent line */
+  h3.section-title,div.section-title{position:relative;padding-bottom:4px}
+  h3.section-title::after,div.section-title::after{content:'';position:absolute;bottom:0;left:0;width:32px;height:2px;background:linear-gradient(90deg,var(--brand),var(--brand-2));border-radius:2px}
 
-  /* Status badges pop */
-  .status{font-weight:600;letter-spacing:.02em}
-  .status.completed,.status.answered{box-shadow:0 0 0 1px rgba(15,110,86,.2)}
-  .status.pending,.status.voicemail{box-shadow:0 0 0 1px rgba(186,117,23,.2)}
-  .status.failed,.status.missed{box-shadow:0 0 0 1px rgba(163,45,45,.2)}
+  /* Status badges with stronger contrast */
+  .status{font-weight:600!important;letter-spacing:.03em!important;font-size:10px!important}
+  .status.completed,.status.answered{background:#dcfff2!important;color:#065f46!important;box-shadow:0 0 0 1px rgba(6,95,70,.15)!important}
+  .status.pending,.status.voicemail{background:#fff8e6!important;color:#92400e!important;box-shadow:0 0 0 1px rgba(146,64,14,.15)!important}
+  .status.failed,.status.missed{background:#ffeaea!important;color:#991b1b!important;box-shadow:0 0 0 1px rgba(153,27,27,.15)!important}
 
-  /* Sidebar active glow */
-  .nav-item.active{box-shadow:inset 3px 0 0 var(--brand)}
+  /* Table rows — subtle hover */
+  tbody tr{transition:background .08s}
+  tbody tr:hover{background:linear-gradient(90deg,rgba(15,110,86,.04),transparent)!important}
 
-  /* Live dot pulse */
-  @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(29,158,117,.4)}70%{box-shadow:0 0 0 6px rgba(29,158,117,0)}100%{box-shadow:0 0 0 0 rgba(29,158,117,0)}}
-  .live-dot{animation:livePulse 2s infinite!important}
+  /* Bar fills — smoother + gradient */
+  .bar-fill{transition:width .55s cubic-bezier(.4,0,.2,1)!important;position:relative!important;overflow:hidden!important}
+  .bar-fill::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);animation:barShimmer 2s ease 0.6s 1}
+  @keyframes barShimmer{to{left:200%}}
 
-  /* Table row hover glow */
-  tbody tr{transition:background .1s}
-  tbody tr:hover td:first-child{color:var(--brand)}
+  /* Live dot stronger pulse */
+  @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(29,158,117,.5)}70%{box-shadow:0 0 0 8px rgba(29,158,117,0)}100%{box-shadow:0 0 0 0 rgba(29,158,117,0)}}
+  .live-dot{animation:livePulse 1.8s infinite!important;background:var(--brand-2)!important}
 
-  /* Bar fill animation */
-  .bar-fill{transition:width .6s cubic-bezier(.4,0,.2,1)!important}
+  /* Nav active — green pill */
+  .nav-item.active{background:linear-gradient(90deg,rgba(15,110,86,.1),rgba(15,110,86,.03))!important}
 
-  /* Header gradient accent */
-  .header-bar::before{content:'';display:block;height:3px;background:linear-gradient(90deg,var(--brand),var(--brand-2),#7F77DD,#185FA5);border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin:-14px -16px 14px}
+  /* Header gradient bar */
+  .header-bar{border-top:3px solid transparent!important;border-image:linear-gradient(90deg,var(--brand),var(--brand-2),#7F77DD,#185FA5) 1!important;border-radius:var(--radius-lg) var(--radius-lg) 0 0}
 
-  /* KPI delta pill */
-  .delta.up{background:linear-gradient(90deg,rgba(15,110,86,.12),rgba(29,158,117,.08));border:0.5px solid rgba(15,110,86,.2)}
-  .delta.down{background:linear-gradient(90deg,rgba(163,45,45,.1),rgba(163,45,45,.05));border:0.5px solid rgba(163,45,45,.2)}
-
-  /* Chip style */
-  .chip{backdrop-filter:blur(4px)}
+  /* Delta chips */
+  .delta.up{background:linear-gradient(90deg,rgba(15,110,86,.1),rgba(29,158,117,.06))!important;border:0.5px solid rgba(15,110,86,.18)!important}
+  .delta.down{background:linear-gradient(90deg,rgba(163,45,45,.08),rgba(163,45,45,.04))!important;border:0.5px solid rgba(163,45,45,.18)!important}
 
   /* Panel fade-in */
-  .panel.active{animation:panelIn .25s ease-out}
-  @keyframes panelIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .panel.active{animation:panelIn .22s ease-out}
+  @keyframes panelIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+  /* KPI grid spacing */
+  .kpi-grid{gap:12px!important}
+
+  /* Sidebar footer subtle */
+  .sidebar-footer{border-top:0.5px solid var(--border);padding-top:12px;margin-top:auto}
+
+  /* Refresh button shine */
+  .refresh-btn{background:linear-gradient(135deg,var(--surface),var(--surface-2))!important;transition:box-shadow .15s}
+  .refresh-btn:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+
+  /* Chart tooltips sharper */
+  .chartjs-tooltip{border-radius:8px!important;font-size:12px!important}
 </style>
 </head>
 <body>
@@ -2482,7 +2492,14 @@
     function bindSelect(id,key){
       const sel=document.getElementById(id);
       if(!sel)return;
-      const h=()=>{if(state[key]!==sel.value){state[key]=sel.value;update()}};
+      const h=()=>{
+        if(state[key]!==sel.value){
+          state[key]=sel.value;
+          // Use live data if loaded, else fall back to simulated
+          if(typeof liveUpdate==='function'&&typeof RAW!=='undefined'&&RAW)liveUpdate();
+          else update();
+        }
+      };
       sel.addEventListener('change',h);sel.addEventListener('input',h);sel.addEventListener('blur',h);
     }
     bindSelect('f-range','range');bindSelect('f-campaign','campaign');bindSelect('f-channel','channel');bindSelect('f-segment','segment');
@@ -2493,17 +2510,22 @@
       document.getElementById('f-campaign').value='all';
       document.getElementById('f-channel').value='all';
       document.getElementById('f-segment').value='all';
-      update();
+      if(typeof liveUpdate==='function'&&typeof RAW!=='undefined'&&RAW)liveUpdate();
+      else update();
     });
 
     document.getElementById('refreshBtn').addEventListener('click',e=>{
       const btn=e.currentTarget;
       btn.classList.add('spinning');
-      const now=new Date();
-      const time=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
-      document.getElementById('refreshLabel').textContent='Simulated · '+RANGE_LABEL[state.range]+' · Refreshed '+now.getDate()+' May 2026 '+time+' MT';
-      update();
-      setTimeout(()=>btn.classList.remove('spinning'),600);
+      if(typeof loadLive==='function'){
+        loadLive().finally(()=>btn.classList.remove('spinning'));
+      } else {
+        const now=new Date();
+        const time=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
+        document.getElementById('refreshLabel').textContent='Refreshed '+now.getDate()+' Jun 2026 '+time;
+        update();
+        setTimeout(()=>btn.classList.remove('spinning'),600);
+      }
     });
 
     document.querySelectorAll('.tab,.nav-item').forEach(el=>{
@@ -2670,24 +2692,13 @@
         else if(state.panel==='insights')renderInsights(d);
         renderChips();
         document.getElementById('rowCountPill').textContent='Rows: '+d.rowTotal.toLocaleString();
-        // Refresh table data bindings
         if(tblState.donations)tblState.donations.data=d.donations;
         if(tblState.calls)tblState.calls.data=d.calls;
         if(tblState.roster)tblState.roster.data=d.roster;
       }catch(err){console.error('liveUpdate error:',err);}
     }
 
-    // Patch the refresh button to re-fetch
-    document.getElementById('refreshBtn').addEventListener('click',async e=>{
-      const btn=e.currentTarget;
-      btn.classList.add('spinning');
-      await loadLive();
-      setTimeout(()=>btn.classList.remove('spinning'),600);
-    },{capture:true});
-
     async function loadLive(){
-      const API='https://snowflake-finchbi.onrender.com/api/Analytics';
-      try{
       try{
         const [ovR,donSumR,monthlyR,campaignsR,channelsR,donListR,
                callSumR,outcomesR,leaderboardR,callListR,
@@ -2709,40 +2720,24 @@
           fetch(API+'/donations/daily').then(r=>r.json()).catch(()=>({data:[]})),
           fetch(API+'/calls/heatmap').then(r=>r.json()).catch(()=>({data:[]})),
         ]);
-
         RAW={
-          ov:ovR.data, ds:donSumR.data, cs:callSumR.data,
-          apiCamp:campaignsR.data, apiCh:channelsR.data,
-          apiOut:outcomesR.data, apiLead:leaderboardR.data,
-          apiMon:monthlyR.data, apiDon:donListR.data,
-          apiCall:callListR.data, apiSeg:segmentsR.data,
-          apiLc:lifecycleR.data, apiRos:rosterR.data, apiAr:atRiskR.data,
-          apiDaily:dailyR.data, apiHeat:heatR.data
+          ov:ovR.data,ds:donSumR.data,cs:callSumR.data,
+          apiCamp:campaignsR.data,apiCh:channelsR.data,
+          apiOut:outcomesR.data,apiLead:leaderboardR.data,
+          apiMon:monthlyR.data,apiDon:donListR.data,
+          apiCall:callListR.data,apiSeg:segmentsR.data,
+          apiLc:lifecycleR.data,apiRos:rosterR.data,apiAr:atRiskR.data,
+          apiDaily:dailyR.data,apiHeat:heatR.data
         };
-
-        // Update refresh label
         const now=new Date();
         const time=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
         document.getElementById('refreshLabel').textContent='Live · Neon DB · '+now.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+time;
-
-        // Wire all filter/segment changes to liveUpdate
-        ['f-range','f-campaign','f-channel','f-segment'].forEach(id=>{
-          const el=document.getElementById(id);
-          if(el){
-            el.addEventListener('change',liveUpdate,{capture:true});
-            el.addEventListener('input',liveUpdate,{capture:true});
-          }
-        });
-
-        // Render with live data
         liveUpdate();
-
-        // Wire table export buttons to API CSV endpoints
+        // Wire export buttons
         const donExp=document.getElementById('donExportBtn');
-        if(donExp) donExp.addEventListener('click',e=>{e.stopImmediatePropagation();window.open(API+'/donations/export','_blank');},{capture:true});
+        if(donExp&&!donExp._live){donExp._live=true;donExp.addEventListener('click',e=>{e.stopImmediatePropagation();window.open(API+'/donations/export','_blank');},{capture:true});}
         const callExp=document.getElementById('callExportBtn');
-        if(callExp) callExp.addEventListener('click',e=>{e.stopImmediatePropagation();window.open(API+'/calls/export','_blank');},{capture:true});
-
+        if(callExp&&!callExp._live){callExp._live=true;callExp.addEventListener('click',e=>{e.stopImmediatePropagation();window.open(API+'/calls/export','_blank');},{capture:true});}
       }catch(e){console.error('Live data load failed:',e);}
     }
 
